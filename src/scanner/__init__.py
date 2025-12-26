@@ -1,8 +1,11 @@
-"""
-Scanner Module
-Core scanning functionality and pattern analysis.
+"""Scanner module for Trade application.
+
+This module provides scanning and analysis functionality.
 """
 
-from src.scanner.core import TradeScanner
+# Import scanner components for public API
+from .scanner import Scanner
 
-__all__ = ["TradeScanner"]
+__all__ = [
+    "Scanner",
+]
