@@ -10,6 +10,8 @@ import pytz
 import pandas as pd
 
 from binance_api import exchange_info, ticker_24h, klines, klines_range
+from coinbase_api import products as cb_products, klines as cb_klines
+from kraken_api import asset_pairs as kr_asset_pairs, ohlc as kr_ohlc
 
 OUT_PATH = 'out/results.json'
 
@@ -86,64 +88,117 @@ def touched_after(df_after, price):
     row = touched.iloc[0]
     return dict(time=row['open_time'].isoformat(), price=float(price))
 
-def scan_top_n(n=200):
-    info = exchange_info()
-    symbols_info = info.get('symbols', [])
-    # filter perpetual USDT futures
-    perp_usdt = [s['symbol'] for s in symbols_info if s.get('status') == 'TRADING' and s.get('symbol','').endswith('USDT') and ('PERPETUAL' in s.get('contractType','PERPETUAL'))]
-    # get 24h tickers and pick top by quoteVolume
-    tickers = ticker_24h()
-    tickers = [t for t in tickers if t['symbol'] in perp_usdt]
-    tickers.sort(key=lambda x: float(x.get('quoteVolume', 0)), reverse=True)
-    top = [t['symbol'] for t in tickers[:n]]
-
+def scan_top_n(n=200, exchanges=('binance', 'coinbase', 'kraken')):
+    """Scan top symbols from multiple exchanges.
+    For Binance we use futures top by quoteVolume. For Coinbase/Kraken we use product/asset list (best-effort top N per exchange).
+    """
     results = []
     now = datetime.now(timezone.utc)
     start_fetch_ms = to_ms(now - timedelta(days=8))
     end_fetch_ms = to_ms(now + timedelta(minutes=1))
 
-    for sym in top:
+    for exch in exchanges:
+        symbols = []
         try:
-            # get recent 1m data (last ~8 days)
-            raw1 = klines_range(sym, '1m', start_fetch_ms, end_fetch_ms)
-            df1 = parse_klines(raw1)
-
-            session = find_last_friday_session(df1)
-            midline_touch = None
-            if session is not None:
-                mid = (session['body_high'] + session['body_low']) / 2.0
-                # consider bars after session end
-                df_after = df1[df1['open_time'] > session['end']]
-                touch = touched_after(df_after, mid)
-                if touch:
-                    midline_touch = touch
-
-            # get daily candles to compute ATH/ATL over last 1000 days
-            rawd = klines(sym, '1d', limit=1000)
-            dfd = parse_klines(rawd)
-            if not dfd.empty:
-                ath = float(dfd['high'].max())
-                atl = float(dfd['low'].min())
-            else:
-                ath = None
-                atl = None
-
-            fib50 = None
-            fib_touches = []
-            if ath and atl and ath > atl:
-                fib50 = fib_level(ath, atl, 0.5)
-                # check if any candle after session touched fib50
-                if session is not None:
-                    df_after = df1[df1['open_time'] > session['end']]
-                    touch = touched_after(df_after, fib50)
-                    if touch:
-                        fib_touches.append(dict(level=0.5, touch=touch))
-
-            results.append(dict(symbol=sym, session=session, midline_touch=midline_touch, fib50=fib50, fib_touches=fib_touches, ath=ath, atl=atl))
+            if exch == 'binance':
+                info = exchange_info()
+                symbols_info = info.get('symbols', [])
+                perp_usdt = [s['symbol'] for s in symbols_info if s.get('status') == 'TRADING' and s.get('symbol','').endswith('USDT') and ('PERPETUAL' in s.get('contractType','PERPETUAL'))]
+                tickers = ticker_24h()
+                tickers = [t for t in tickers if t['symbol'] in perp_usdt]
+                tickers.sort(key=lambda x: float(x.get('quoteVolume', 0)), reverse=True)
+                symbols = [t['symbol'] for t in tickers[:n]]
+            elif exch == 'coinbase':
+                prods = cb_products()
+                # take product ids like BTC-USD, filter USD pairs
+                prods = [p for p in prods if p.get('quote_currency') in ('USD','USDT','USDC')]
+                symbols = [p['id'] for p in prods[:n]]
+            elif exch == 'kraken':
+                pairs = kr_asset_pairs().get('result', {})
+                keys = list(pairs.keys())[:n]
+                symbols = keys
         except Exception as e:
-            results.append(dict(symbol=sym, error=str(e)))
-        # gentle rate-limit
-        time.sleep(0.12)
+            print('symbol fetch error', exch, e)
+
+        for sym in symbols:
+            try:
+                if exch == 'binance':
+                    raw1 = klines_range(sym, '1m', start_fetch_ms, end_fetch_ms)
+                    df1 = parse_klines(raw1)
+                    session = find_last_friday_session(df1)
+                    midline_touch = None
+                    if session is not None:
+                        mid = (session['body_high'] + session['body_low']) / 2.0
+                        df_after = df1[df1['open_time'] > session['end']]
+                        touch = touched_after(df_after, mid)
+                        if touch:
+                            midline_touch = touch
+                    rawd = klines(sym, '1d', limit=1000)
+                    dfd = parse_klines(rawd)
+                    if not dfd.empty:
+                        ath = float(dfd['high'].max())
+                        atl = float(dfd['low'].min())
+                    else:
+                        ath = None
+                        atl = None
+                    fib50 = None
+                    fib_touches = []
+                    if ath and atl and ath > atl:
+                        fib50 = fib_level(ath, atl, 0.5)
+                        if session is not None:
+                            df_after = df1[df1['open_time'] > session['end']]
+                            touch = touched_after(df_after, fib50)
+                            if touch:
+                                fib_touches.append(dict(level=0.5, touch=touch))
+                    results.append(dict(exchange=exch, symbol=sym, session=session, midline_touch=midline_touch, fib50=fib50, fib_touches=fib_touches, ath=ath, atl=atl))
+                elif exch == 'coinbase':
+                    # Coinbase product id like BTC-USD; use candles granularity 60s
+                    raw = cb_klines(sym, granularity=60)
+                    # Coinbase returns [time, low, high, open, close, volume]
+                    df = parse_klines([[c[0]*1000, c[3], c[2], c[1], c[4], c[5], 0,0,0,0,0,0] for c in raw])
+                    session = find_last_friday_session(df)
+                    midline_touch = None
+                    if session:
+                        mid = (session['body_high'] + session['body_low']) / 2.0
+                        df_after = df[df['open_time'] > session['end']]
+                        touch = touched_after(df_after, mid)
+                        if touch:
+                            midline_touch = touch
+                    # daily ATH/ATL via larger granularity
+                    rawd = cb_klines(sym, granularity=86400)
+                    if rawd:
+                        dfd = parse_klines([[c[0]*1000, c[3], c[2], c[1], c[4], c[5], 0,0,0,0,0,0] for c in rawd])
+                        ath = float(dfd['high'].max())
+                        atl = float(dfd['low'].min())
+                    else:
+                        ath = atl = None
+                    fib50 = fib_level(ath, atl, 0.5) if ath and atl and ath>atl else None
+                    results.append(dict(exchange=exch, symbol=sym, session=session, midline_touch=midline_touch, fib50=fib50, fib_touches=[], ath=ath, atl=atl))
+                elif exch == 'kraken':
+                    # Kraken pair keys and OHLC
+                    data = kr_ohlc(sym, interval=1)
+                    if data and 'result' in data:
+                        # result contains pair key and 'last'
+                        pair_key = [k for k in data['result'].keys() if k != 'last'][0]
+                        raw = data['result'][pair_key]
+                        # raw items: [time, open, high, low, close, v, ...]
+                        df = parse_klines([[int(c[0])*1000, c[1], c[2], c[3], c[4], c[6], 0,0,0,0,0,0] for c in raw])
+                        session = find_last_friday_session(df)
+                        midline_touch = None
+                        if session:
+                            mid = (session['body_high'] + session['body_low']) / 2.0
+                            df_after = df[df['open_time'] > session['end']]
+                            touch = touched_after(df_after, mid)
+                            if touch:
+                                midline_touch = touch
+                        # daily ATH/ATL: aggregate by day
+                        ath = df['high'].max() if not df.empty else None
+                        atl = df['low'].min() if not df.empty else None
+                        fib50 = fib_level(ath, atl, 0.5) if ath and atl and ath>atl else None
+                        results.append(dict(exchange=exch, symbol=sym, session=session, midline_touch=midline_touch, fib50=fib50, fib_touches=[], ath=ath, atl=atl))
+            except Exception as e:
+                results.append(dict(exchange=exch, symbol=sym, error=str(e)))
+            time.sleep(0.12)
 
     # save
     with open(OUT_PATH, 'w') as f:
