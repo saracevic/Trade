@@ -1,34 +1,92 @@
 # Trade Scanner
 
-- Friday Asian-range 50% midline (script's `midline_body`) touch after session end
-- 50% Fibonacci (from ATH/ATL via daily candles) touches after session end
+A cryptocurrency trading pair scanner that monitors multiple exchanges (Binance, Coinbase, Kraken) and publishes results to GitHub Pages.
 
-It uses public Binance Futures API and writes results to `out/results.json`.
+## Features
 
-Usage (local):
+- Scans multiple cryptocurrency exchanges for trading pairs
+- Tracks price, volume, bid/ask spreads, and 24h changes
+- Automatically publishes results to GitHub Pages
+- Auto-updates every push to main branch
+- Manual scan trigger available
 
-```bash
-python -m pip install -r requirements.txt
-python scanner.py
-```
+## Live Demo
 
-You can run this daily with GitHub Actions; an example workflow is included in `.github/workflows/scan.yml` to push results to `gh-pages`.
+Visit the live scanner results at: **https://saracevic.github.io/Trade/**
 
-Supported exchanges (best-effort): `binance` (futures), `coinbase`, `kraken`. The scanner will try to fetch top symbols per exchange and apply the same Asia-range midline + fib50 checks. Results are aggregated to `out/results.json` and published to GitHub Pages.
+## Usage
 
-To run a manual full top-200 scan and publish via Actions, use the `Manual Scan and publish` workflow from the Actions tab (or click "Run Scan" on the site and trigger the workflow).
-
-- Friday Asian-range 50% midline (script's `midline_body`) touch after session end
-- 50% Fibonacci (from ATH/ATL via daily candles) touches after session end
-
-It uses public Binance Futures API and writes results to `out/results.json`.
-
-Usage (local):
+### Local Development
 
 ```bash
+# Install dependencies
 python -m pip install -r requirements.txt
-python scanner.py
+
+# Run the scanner
+python main.py
 ```
 
-You can run this daily with GitHub Actions; an example workflow is included in `.github/workflows/scan.yml` to push results to `gh-pages`.
-# Trade
+This will generate `results.json` with the latest trading data.
+
+### GitHub Actions
+
+The scanner runs automatically via GitHub Actions:
+
+1. **Automatic Scan**: Triggers on every push to `main` branch (`.github/workflows/scan.yml`)
+2. **Manual Scan**: Can be triggered manually from the Actions tab (`.github/workflows/manual_scan.yml`)
+
+Both workflows will:
+- Install dependencies
+- Run the scanner
+- Generate `results.json`
+- Commit and push results back to the repository
+- Update GitHub Pages automatically
+
+## GitHub Pages Setup
+
+To enable GitHub Pages for this repository:
+
+1. Go to repository **Settings** → **Pages**
+2. Under "Source", select **Deploy from a branch**
+3. Select branch: **main**
+4. Select folder: **/ (root)**
+5. Click **Save**
+
+After a few minutes, your site will be live at `https://<username>.github.io/Trade/`
+
+## Supported Exchanges
+
+- **Binance** (Futures)
+- **Coinbase**
+- **Kraken**
+
+## Requirements
+
+- Python 3.10+
+- Dependencies listed in `requirements.txt`:
+  - requests
+  - aiohttp
+  - pydantic
+  - python-dotenv
+  - pandas
+  - pytz
+
+## Project Structure
+
+```
+.
+├── .github/workflows/     # GitHub Actions workflows
+├── src/                   # Source code
+│   ├── api/              # Exchange API clients
+│   ├── models/           # Data models
+│   ├── scanner/          # Core scanner logic
+│   └── utils/            # Utility functions
+├── index.html            # GitHub Pages frontend
+├── results.json          # Scanner output (auto-generated)
+├── main.py              # Entry point
+└── requirements.txt     # Python dependencies
+```
+
+## License
+
+See [LICENSE](LICENSE) file for details.
