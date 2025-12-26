@@ -4,7 +4,6 @@ Main trade scanner implementation with multi-exchange support.
 """
 
 import asyncio
-import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from pathlib import Path
@@ -15,6 +14,9 @@ from src.utils.logger import setup_logger, LoggerMixin
 from src.api.binance import BinanceAPI
 from src.api.coinbase import CoinbaseAPI  
 from src.api.kraken import KrakenAPI
+
+# Rate limiting configuration
+API_RATE_LIMIT_DELAY = 0.15  # Seconds between API calls
 
 
 class TradeScanner(LoggerMixin):
@@ -144,10 +146,10 @@ class TradeScanner(LoggerMixin):
                 pairs = self._parse_binance_tickers(tickers)
             elif exchange == "coinbase":
                 products = await asyncio.to_thread(api.get_products)
-                pairs = self._parse_coinbase_products(products)
+                pairs = await self._parse_coinbase_products(products)
             elif exchange == "kraken":
                 asset_pairs = await asyncio.to_thread(api.get_asset_pairs)
-                pairs = self._parse_kraken_pairs(asset_pairs)
+                pairs = await self._parse_kraken_pairs(asset_pairs)
             else:
                 pairs = []
             
@@ -251,7 +253,7 @@ class TradeScanner(LoggerMixin):
         
         return pairs
     
-    def _parse_coinbase_products(self, products: List[Dict[str, Any]]) -> List[TradingPair]:
+    async def _parse_coinbase_products(self, products: List[Dict[str, Any]]) -> List[TradingPair]:
         """Parse Coinbase product data into TradingPair objects."""
         pairs: List[TradingPair] = []
         
@@ -275,12 +277,12 @@ class TradeScanner(LoggerMixin):
         for i, product in enumerate(perpetual_products):
             product_id = product.get('id', '')
             try:
-                # Add rate limiting (0.15 second delay)
+                # Add rate limiting
                 if i > 0:
-                    time.sleep(0.15)
+                    await asyncio.sleep(API_RATE_LIMIT_DELAY)
                 
                 self.logger.debug(f"Fetching stats for Coinbase product: {product_id}")
-                stats = api.get_product_stats(product_id)
+                stats = await asyncio.to_thread(api.get_product_stats, product_id)
                 
                 if not stats:
                     self.logger.debug(f"No stats available for {product_id}")
@@ -315,7 +317,7 @@ class TradeScanner(LoggerMixin):
         self.logger.info(f"Successfully parsed {len(pairs)} Coinbase products with price/volume data")
         return pairs
     
-    def _parse_kraken_pairs(self, data: Dict[str, Any]) -> List[TradingPair]:
+    async def _parse_kraken_pairs(self, data: Dict[str, Any]) -> List[TradingPair]:
         """Parse Kraken asset pairs data into TradingPair objects."""
         pairs: List[TradingPair] = []
         
@@ -348,12 +350,12 @@ class TradeScanner(LoggerMixin):
             pair_list = ','.join(batch)
             
             try:
-                # Add rate limiting (0.15 second delay between batches)
+                # Add rate limiting between batches
                 if i > 0:
-                    time.sleep(0.15)
+                    await asyncio.sleep(API_RATE_LIMIT_DELAY)
                 
                 self.logger.debug(f"Fetching ticker for Kraken pairs: {pair_list}")
-                ticker_data = api.get_ticker(pair_list)
+                ticker_data = await asyncio.to_thread(api.get_ticker, pair_list)
                 
                 if not isinstance(ticker_data, dict) or 'result' not in ticker_data:
                     self.logger.warning(f"Invalid ticker data for batch: {pair_list}")
