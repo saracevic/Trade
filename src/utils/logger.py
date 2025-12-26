@@ -165,13 +165,17 @@ class LoggerMixin:
                 self.logger.info("Doing something")
     """
     
+    _logger: Optional[logging.Logger] = None
+    
     @property
     def logger(self) -> logging.Logger:
         """
-        Get logger instance for this class.
+        Get logger instance for this class (cached).
         
         Returns:
             Logger configured for this class
         """
-        name = f"{self.__class__.__module__}.{self.__class__.__name__}"
-        return get_logger(name)
+        if self._logger is None:
+            name = f"{self.__class__.__module__}.{self.__class__.__name__}"
+            self._logger = get_logger(name)
+        return self._logger

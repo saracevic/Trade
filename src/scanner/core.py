@@ -257,15 +257,14 @@ class TradeScanner(LoggerMixin):
         for product in products:
             try:
                 # Coinbase products endpoint doesn't include price/volume
-                # We'd need to make additional calls for that data
-                # For now, create basic pairs
-                pair = TradingPair(
-                    symbol=product.get('id', ''),
-                    exchange="coinbase",
-                    price=0.0,  # Would need additional API call
-                    volume_24h=0.0  # Would need additional API call
+                # Skip pairs without complete data rather than using invalid 0.0 values
+                # In a production system, we'd make additional API calls for stats
+                self.logger.debug(
+                    f"Coinbase product found: {product.get('id')} "
+                    "(price/volume data requires additional API call)"
                 )
-                pairs.append(pair)
+                # Skip for now - would need stats API call to get valid data
+                continue
             except (ValueError, KeyError) as e:
                 self.logger.debug(f"Failed to parse Coinbase product: {e}")
                 continue
@@ -279,13 +278,15 @@ class TradeScanner(LoggerMixin):
         if isinstance(data, dict) and 'result' in data:
             for pair_name, pair_data in data['result'].items():
                 try:
-                    pair = TradingPair(
-                        symbol=pair_name,
-                        exchange="kraken",
-                        price=0.0,  # Would need ticker data
-                        volume_24h=0.0  # Would need ticker data
+                    # Kraken asset pairs endpoint doesn't include price/volume
+                    # Skip pairs without complete data rather than using invalid 0.0 values
+                    # In a production system, we'd make additional API calls for ticker data
+                    self.logger.debug(
+                        f"Kraken pair found: {pair_name} "
+                        "(price/volume data requires additional API call)"
                     )
-                    pairs.append(pair)
+                    # Skip for now - would need ticker API call to get valid data
+                    continue
                 except (ValueError, KeyError) as e:
                     self.logger.debug(f"Failed to parse Kraken pair: {e}")
                     continue

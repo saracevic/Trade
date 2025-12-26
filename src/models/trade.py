@@ -6,7 +6,7 @@ Pydantic models for data validation and serialization.
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field, validator, field_validator
+from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 
 
