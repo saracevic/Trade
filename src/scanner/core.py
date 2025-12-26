@@ -15,6 +15,9 @@ from src.api.binance import BinanceAPI
 from src.api.coinbase import CoinbaseAPI  
 from src.api.kraken import KrakenAPI
 
+# Rate limiting configuration
+API_RATE_LIMIT_DELAY = 0.15  # Seconds between API calls
+
 
 class TradeScanner(LoggerMixin):
     """
@@ -274,9 +277,9 @@ class TradeScanner(LoggerMixin):
         for i, product in enumerate(perpetual_products):
             product_id = product.get('id', '')
             try:
-                # Add rate limiting (0.15 second delay)
+                # Add rate limiting
                 if i > 0:
-                    await asyncio.sleep(0.15)
+                    await asyncio.sleep(API_RATE_LIMIT_DELAY)
                 
                 self.logger.debug(f"Fetching stats for Coinbase product: {product_id}")
                 stats = await asyncio.to_thread(api.get_product_stats, product_id)
@@ -347,9 +350,9 @@ class TradeScanner(LoggerMixin):
             pair_list = ','.join(batch)
             
             try:
-                # Add rate limiting (0.15 second delay between batches)
+                # Add rate limiting between batches
                 if i > 0:
-                    await asyncio.sleep(0.15)
+                    await asyncio.sleep(API_RATE_LIMIT_DELAY)
                 
                 self.logger.debug(f"Fetching ticker for Kraken pairs: {pair_list}")
                 ticker_data = await asyncio.to_thread(api.get_ticker, pair_list)

@@ -28,8 +28,16 @@ async def main():
         scan_results = await scanner.scan_all_exchanges()
         
         # Convert results to JSON-serializable format
+        # Extract timestamp from first available result
+        timestamp = None
+        if scan_results:
+            for exchange_name in scan_results:
+                if scan_results[exchange_name].pairs:
+                    timestamp = scan_results[exchange_name].pairs[0].timestamp.isoformat()
+                    break
+        
         results = {
-            'timestamp': scan_results[list(scan_results.keys())[0]].pairs[0].timestamp.isoformat() if scan_results and list(scan_results.keys()) and scan_results[list(scan_results.keys())[0]].pairs else None,
+            'timestamp': timestamp,
             'exchanges': {}
         }
         
