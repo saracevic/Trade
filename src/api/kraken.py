@@ -48,6 +48,26 @@ class KrakenAPI(BaseExchangeAPI):
         """
         return self._make_request('/0/public/AssetPairs')
     
+    def get_ticker(self, pair: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get ticker information for one or more trading pairs.
+        
+        Args:
+            pair: Trading pair(s) to get ticker for. Can be a single pair
+                  or comma-separated list. If None, returns all tickers.
+                  
+        Returns:
+            Dictionary containing ticker information including price,
+            volume, and other statistics
+            
+        Raises:
+            requests.exceptions.RequestException: If request fails
+        """
+        params = {}
+        if pair is not None:
+            params['pair'] = pair
+        return self._make_request('/0/public/Ticker', params=params)
+    
     def get_ticker_24h(self) -> List[Dict[str, Any]]:
         """
         Get 24-hour ticker information for all trading pairs.

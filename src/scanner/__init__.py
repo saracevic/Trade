@@ -4,8 +4,8 @@ This module provides scanning and analysis functionality.
 """
 
 # Import scanner components for public API
-from .scanner import Scanner
+from .core import TradeScanner
 
 __all__ = [
-    "Scanner",
+    "TradeScanner",
 ]
