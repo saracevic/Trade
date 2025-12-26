@@ -10,23 +10,28 @@
     .controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
     input[type=search]{padding:8px;border-radius:6px;border:1px solid #ddd;min-width:160px}
     label{display:inline-flex;align-items:center;gap:6px}
+    select{padding:8px;border-radius:6px;border:1px solid #ddd}
+    button{padding:8px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer}
+    button:hover{background:#f6f6f6}
     table{width:100%;border-collapse:collapse;margin-top:8px}
     th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px}
     th{background:#f6f6f6}
     @media(min-width:900px){th,td{font-size:13px}}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef;border:1px solid #cce;font-size:12px}
+    .error{color:#d00;padding:20px;text-align:center}
   </style>
 </head>
 <body>
   <header>
-    <h2>Binance Perp Scan</h2>
+    <h2>Trade Scanner Results</h2>
     <div class="controls">
-      <input id="q" type="search" placeholder="Sembol ara (ör. BTCUSDT)">
-      <label><input id="f_mid" type="checkbox"> Sadece Asia 50% midline temas</label>
-      <label><input id="f_fib" type="checkbox"> Sadece Fib50 temas</label>
-      <button id="refresh">Yenile</button>
+      <input id="q" type="search" placeholder="Search symbol (e.g., BTC)">
+      <select id="exchange_filter">
+        <option value="">All Exchanges</option>
+      </select>
+      <button id="refresh">Refresh</button>
       <div style="margin-left:auto">
-        <a href="/results.json">results.json</a>
+        <a href="./results.json" target="_blank">results.json</a>
         <a style="margin-left:10px;padding:8px 10px;background:#2b6ef6;color:#fff;border-radius:6px;text-decoration:none" href="https://github.com/saracevic/Trade/actions/workflows/manual_scan.yml">Run Scan</a>
       </div>
     </div>
@@ -39,7 +44,7 @@
     async function load(){
       // Try local published results.json first; if unavailable, fall back to raw.githubusercontent (repo main branch)
       try{
-        const res = await fetch('./results.json');
+        const res = await fetch('./results.json?t=' + Date.now());
         if(res.ok) return await res.json();
       }catch(e){/* continue to fallback */}
       // fallback: raw.githubusercontent URL (bypass Pages publishing issues)
@@ -50,27 +55,59 @@
     }
 
     function render(data){
-      const results = data.results || [];
-      document.getElementById('summary').innerText = `Oluşturuldu: ${data.generated_at} — ${results.length} sembol`;
+      const exchanges = data.exchanges || {};
+      const timestamp = data.timestamp || 'N/A';
+      
+      // Count total pairs
+      let totalPairs = 0;
+      for (const exchange in exchanges) {
+        totalPairs += exchanges[exchange].length;
+      }
+      
+      document.getElementById('summary').innerText = `Last updated: ${timestamp} — ${totalPairs} trading pairs`;
 
       const q = document.getElementById('q').value.trim().toUpperCase();
-      const fmid = document.getElementById('f_mid').checked;
-      const ffib = document.getElementById('f_fib').checked;
+      const exchangeFilter = document.getElementById('exchange_filter').value;
 
-      const rows = results.filter(r=>{
-        if(q && !r.symbol.includes(q)) return false;
-        if(fmid && !r.midline_touch) return false;
-        if(ffib && (!r.fib_touches || r.fib_touches.length===0)) return false;
-        return true;
-      });
-
-      const headers = ['Symbol','Asia Midline Touch','Fib50','ATH','ATL'];
-      let html = '<table><thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
-      for(const r of rows){
-        const mid = r.midline_touch ? `<span class="badge">${r.midline_touch.price} @ ${r.midline_touch.time}</span>` : '';
-        const fib = r.fib_touches && r.fib_touches.length? `<span class="badge">${r.fib_touches.map(ft=>ft.level+' @ '+ft.touch.time).join('<br>')}</span>` : (r.fib50? r.fib50 : '');
-        html += `<tr><td>${r.symbol}</td><td>${mid}</td><td>${fib}</td><td>${r.ath||''}</td><td>${r.atl||''}</td></tr>`;
+      // Flatten all pairs from all exchanges
+      const rows = [];
+      for (const [exchangeName, pairs] of Object.entries(exchanges)) {
+        if (exchangeFilter && exchangeName !== exchangeFilter) continue;
+        
+        for (const pair of pairs) {
+          if (q && !pair.symbol.toUpperCase().includes(q)) continue;
+          
+          rows.push({
+            exchange: exchangeName,
+            symbol: pair.symbol || 'N/A',
+            price: pair.price || 'N/A',
+            volume: pair.volume_24h || pair.volume || 'N/A',
+            bid: pair.bid_price || pair.bid || 'N/A',
+            ask: pair.ask_price || pair.ask || 'N/A',
+            change: pair.price_change_24h || pair.change_24h || 'N/A'
+          });
+        }
       }
+
+      const headers = ['Exchange', 'Symbol', 'Price', '24h Volume', 'Bid', 'Ask', '24h Change'];
+      let html = '<table><thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+      
+      if (rows.length === 0) {
+        html += '<tr><td colspan="7" style="text-align:center;padding:20px;">No data available. Run a scan to generate data.</td></tr>';
+      } else {
+        for(const r of rows){
+          html += `<tr>
+            <td>${r.exchange}</td>
+            <td><strong>${r.symbol}</strong></td>
+            <td>${r.price}</td>
+            <td>${r.volume}</td>
+            <td>${r.bid}</td>
+            <td>${r.ask}</td>
+            <td>${r.change}</td>
+          </tr>`;
+        }
+      }
+      
       html += '</tbody></table>';
       document.getElementById('tablewrap').innerHTML = html;
     }
@@ -79,16 +116,34 @@
       try{
         const data = await load();
         window._scan_data = data;
+        
+        // Populate exchange filter
+        const exchanges = data.exchanges || {};
+        const exchangeFilter = document.getElementById('exchange_filter');
+        const currentValue = exchangeFilter.value;
+        
+        // Clear and repopulate
+        exchangeFilter.innerHTML = '<option value="">All Exchanges</option>';
+        for (const exchange of Object.keys(exchanges).sort()) {
+          const option = document.createElement('option');
+          option.value = exchange;
+          option.textContent = exchange.charAt(0).toUpperCase() + exchange.slice(1);
+          exchangeFilter.appendChild(option);
+        }
+        exchangeFilter.value = currentValue;
+        
         render(data);
       }catch(e){
-        document.getElementById('tablewrap').innerText = 'Yükleme hatası: '+e;
+        document.getElementById('tablewrap').innerHTML = '<div class="error">Error loading data: ' + e.message + '<br><br>Make sure to run the scanner first to generate results.json</div>';
       }
     }
 
     document.getElementById('q').addEventListener('input', ()=>render(window._scan_data));
-    document.getElementById('f_mid').addEventListener('change', ()=>render(window._scan_data));
-    document.getElementById('f_fib').addEventListener('change', ()=>render(window._scan_data));
+    document.getElementById('exchange_filter').addEventListener('change', ()=>render(window._scan_data));
     document.getElementById('refresh').addEventListener('click', go);
+
+    // Auto-refresh every 5 minutes
+    setInterval(go, 5 * 60 * 1000);
 
     go();
   </script>
