@@ -1,210 +1,232 @@
 #!/usr/bin/env python3
-"""
-Trade Scanner - Main entry point
-Runs the trade scanner with CLI interface and comprehensive logging.
-"""
 
+import os
 import sys
+import json
 import logging
-import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
+from dataclasses import dataclass
 
-from src.scanner import TradeScanner
-from src.api import APIClient
+import click
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
 
-def setup_logging(log_level: int = logging.INFO, log_file: Optional[str] = None) -> None:
-    """
-    Configure logging for the application.
-    
-    Args:
-        log_level: Logging level (default: INFO)
-        log_file: Optional log file path (default: logs/trade_scanner.log)
-    """
-    # Create logs directory if it doesn't exist
-    log_dir = Path("logs")
-    log_dir.mkdir(exist_ok=True)
-    
-    # Set default log file path
-    if log_file is None:
-        log_file = log_dir / "trade_scanner.log"
-    else:
-        log_file = Path(log_file)
-        log_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Configure logging format
-    log_format = (
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    timestamp_format = "%Y-%m-%d %H:%M:%S"
-    
-    # Create logger
-    logger = logging.getLogger()
-    logger.setLevel(log_level)
-    
-    # File handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(log_level)
-    file_handler.setFormatter(
-        logging.Formatter(log_format, datefmt=timestamp_format)
-    )
-    logger.addHandler(file_handler)
-    
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(log_level)
-    console_handler.setFormatter(
-        logging.Formatter(log_format, datefmt=timestamp_format)
-    )
-    logger.addHandler(console_handler)
-    
-    logger.info(f"Logging initialized - Level: {logging.getLevelName(log_level)}")
-    logger.info(f"Log file: {log_file}")
+from src.exchanges.exchange_factory import ExchangeFactory
+from src.portfolio.portfolio import Portfolio
+from src.strategies.strategy_factory import StrategyFactory
+from src.logger import setup_logger
+from src.config import Config
+
+# Initialize logger
+logger = setup_logger(__name__)
 
 
-def parse_arguments() -> argparse.Namespace:
-    """
-    Parse command-line arguments.
+@dataclass
+class TradingSession:
+    """Represents a trading session with configuration and state."""
+    portfolio: Portfolio
+    exchange: Any
+    strategy: Any
+    config: Config
+    start_time: datetime
+
+
+class TradingBot:
+    """Main trading bot class that orchestrates trading operations."""
     
-    Returns:
-        Parsed arguments
-    """
-    parser = argparse.ArgumentParser(
-        description="Trade Scanner - Monitor and scan trading opportunities",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s --scan                 # Run scanner with default settings
-  %(prog)s --scan --interval 60   # Run scanner every 60 seconds
-  %(prog)s --debug                # Run with debug logging
-  %(prog)s --config config.json   # Use custom configuration file
+    def __init__(self, config: Config):
         """
-    )
-    
-    parser.add_argument(
-        "--scan",
-        action="store_true",
-        help="Run the trade scanner"
-    )
-    
-    parser.add_argument(
-        "--api",
-        action="store_true",
-        help="Start the API server"
-    )
-    
-    parser.add_argument(
-        "--interval",
-        type=int,
-        default=30,
-        help="Scan interval in seconds (default: 30)"
-    )
-    
-    parser.add_argument(
-        "--config",
-        type=str,
-        default="config.json",
-        help="Path to configuration file (default: config.json)"
-    )
-    
-    parser.add_argument(
-        "--log-level",
-        type=str,
-        default="INFO",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        help="Logging level (default: INFO)"
-    )
-    
-    parser.add_argument(
-        "--log-file",
-        type=str,
-        help="Path to log file (default: logs/trade_scanner.log)"
-    )
-    
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debug mode (sets log level to DEBUG)"
-    )
-    
-    parser.add_argument(
-        "--version",
-        action="version",
-        version="%(prog)s 1.0.0"
-    )
-    
-    return parser.parse_args()
-
-
-def main() -> int:
-    """
-    Main entry point for the trade scanner application.
-    
-    Returns:
-        Exit code (0 for success, 1 for failure)
-    """
-    args = parse_arguments()
-    
-    # Determine log level
-    log_level = logging.DEBUG if args.debug else getattr(logging, args.log_level)
-    
-    # Setup logging
-    setup_logging(log_level=log_level, log_file=args.log_file)
-    logger = logging.getLogger(__name__)
-    
-    logger.info("=" * 60)
-    logger.info("Trade Scanner Application Started")
-    logger.info(f"Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
-    logger.info("=" * 60)
-    
-    try:
-        # Validate configuration file
-        config_path = Path(args.config)
-        if not config_path.exists():
-            logger.warning(f"Configuration file not found: {config_path}")
-            logger.info("Using default configuration")
-        else:
-            logger.info(f"Using configuration file: {config_path}")
+        Initialize the trading bot.
         
-        # Run scanner
-        if args.scan:
-            logger.info(f"Starting trade scanner (interval: {args.interval}s)")
-            scanner = TradeScanner(
-                config_file=args.config,
-                scan_interval=args.interval
+        Args:
+            config: Configuration object for the bot
+        """
+        self.config = config
+        self.portfolio = None
+        self.exchange = None
+        self.strategy = None
+        self.session = None
+        logger.info("Trading bot initialized")
+    
+    def setup(self) -> bool:
+        """
+        Setup the trading bot with necessary components.
+        
+        Returns:
+            bool: True if setup successful, False otherwise
+        """
+        try:
+            # Initialize portfolio
+            self.portfolio = Portfolio(self.config.portfolio_config)
+            logger.info(f"Portfolio initialized: {self.portfolio}")
+            
+            # Initialize exchange
+            self.exchange = ExchangeFactory.create(
+                self.config.exchange_type,
+                self.config.exchange_config
             )
-            scanner.run()
-        
-        # Run API server
-        elif args.api:
-            logger.info("Starting API server")
-            api_client = APIClient(config_file=args.config)
-            api_client.run()
-        
-        # Default: run both scanner and API
-        else:
-            logger.info("No specific action specified. Use --scan or --api")
-            logger.info("Run with --help for usage information")
-            return 1
-        
-        return 0
+            logger.info(f"Exchange initialized: {self.exchange}")
+            
+            # Initialize strategy
+            self.strategy = StrategyFactory.create(
+                self.config.strategy_type,
+                self.config.strategy_config
+            )
+            logger.info(f"Strategy initialized: {self.strategy}")
+            
+            # Create trading session
+            self.session = TradingSession(
+                portfolio=self.portfolio,
+                exchange=self.exchange,
+                strategy=self.strategy,
+                config=self.config,
+                start_time=datetime.utcnow()
+            )
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error during setup: {str(e)}")
+            return False
     
-    except KeyboardInterrupt:
-        logger.info("Application interrupted by user")
-        return 0
+    def run(self) -> None:
+        """Run the trading bot."""
+        if not self.setup():
+            logger.error("Failed to setup trading bot")
+            sys.exit(1)
+        
+        try:
+            logger.info("Starting trading bot...")
+            self._trading_loop()
+            
+        except KeyboardInterrupt:
+            logger.info("Trading bot interrupted by user")
+        except Exception as e:
+            logger.error(f"Error in trading bot: {str(e)}")
+        finally:
+            self.cleanup()
     
+    def _trading_loop(self) -> None:
+        """Main trading loop."""
+        iteration = 0
+        
+        while True:
+            iteration += 1
+            logger.debug(f"Trading iteration {iteration}")
+            
+            try:
+                # Get market data
+                market_data = self.exchange.get_market_data(
+                    self.config.trading_pair
+                )
+                logger.debug(f"Market data: {market_data}")
+                
+                # Generate signal
+                signal = self.strategy.generate_signal(market_data)
+                logger.debug(f"Strategy signal: {signal}")
+                
+                # Execute trade if signal is generated
+                if signal:
+                    self._execute_trade(signal)
+                
+                # Check stop conditions
+                if self._should_stop():
+                    logger.info("Stop condition reached")
+                    break
+                    
+            except Exception as e:
+                logger.error(f"Error in trading iteration {iteration}: {str(e)}")
+                continue
+    
+    def _execute_trade(self, signal: Dict[str, Any]) -> None:
+        """
+        Execute a trade based on the signal.
+        
+        Args:
+            signal: Trading signal from strategy
+        """
+        try:
+            logger.info(f"Executing trade with signal: {signal}")
+            # Trade execution logic here
+            
+        except Exception as e:
+            logger.error(f"Error executing trade: {str(e)}")
+    
+    def _should_stop(self) -> bool:
+        """
+        Check if trading should stop.
+        
+        Returns:
+            bool: True if should stop, False otherwise
+        """
+        # Add stop conditions here
+        return False
+    
+    def cleanup(self) -> None:
+        """Cleanup resources."""
+        try:
+            if self.exchange:
+                self.exchange.close()
+            if self.session:
+                logger.info(f"Session ended. Duration: {datetime.utcnow() - self.session.start_time}")
+            logger.info("Trading bot cleanup complete")
+        except Exception as e:
+            logger.error(f"Error during cleanup: {str(e)}")
+
+
+@click.group()
+def cli():
+    """Trading bot CLI."""
+    pass
+
+
+@cli.command()
+@click.option('--config', default='config.json', help='Path to config file')
+def start(config: str):
+    """Start the trading bot."""
+    try:
+        config_obj = Config.load(config)
+        bot = TradingBot(config_obj)
+        bot.run()
     except Exception as e:
-        logger.error(f"Fatal error: {str(e)}", exc_info=True)
-        return 1
-    
-    finally:
-        logger.info("=" * 60)
-        logger.info("Trade Scanner Application Stopped")
-        logger.info(f"Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
-        logger.info("=" * 60)
+        logger.error(f"Failed to start trading bot: {str(e)}")
+        sys.exit(1)
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+@cli.command()
+@click.option('--config', default='config.json', help='Path to config file')
+def api(config: str):
+    """Start the API server (not yet implemented)."""
+    logger.info("API server functionality is not yet implemented")
+    click.echo("API server functionality is not yet implemented")
+
+
+@cli.command()
+@click.option('--config', default='config.json', help='Path to config file')
+def backtest(config: str):
+    """Run backtesting."""
+    try:
+        config_obj = Config.load(config)
+        logger.info("Starting backtest...")
+        # Backtest logic here
+        logger.info("Backtest complete")
+    except Exception as e:
+        logger.error(f"Error during backtest: {str(e)}")
+        sys.exit(1)
+
+
+def main():
+    """Main entry point."""
+    try:
+        cli()
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
