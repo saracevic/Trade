@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+.tox/
+
+# Documentation
+docs/_build/
+*.md
+
+# Output files
+out/
+logs/
+data/
+results.json
+scan_results.json
+
+# Environment
+.env
+.env.local
+
+# CI/CD
+.github/
+
+# Development
+requirements-dev.txt
+.pre-commit-config.yaml
+setup.py
+
+# Misc
+*.log
+.DS_Store
