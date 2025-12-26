@@ -1,0 +1,1145 @@
+{
+  "generated_at": "2025-12-26T12:36:48.156013+00:00",
+  "results": [
+    {
+      "exchange": "coinbase",
+      "symbol": "RONIN-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.033,
+      "fib_touches": [],
+      "ath": 1.936,
+      "atl": 0.13
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "IP-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 8.089500000000001,
+      "fib_touches": [],
+      "ath": 14.933,
+      "atl": 1.246
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "ETH-USDT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 3171.0950000000003,
+      "fib_touches": [],
+      "ath": 4956.85,
+      "atl": 1385.34
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "RARE-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.07999999999999999,
+      "fib_touches": [],
+      "ath": 0.145,
+      "atl": 0.015
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "SUP-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.064485,
+      "fib_touches": [],
+      "ath": 0.10697,
+      "atl": 0.022
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "CRO-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.2291,
+      "fib_touches": [],
+      "ath": 0.39,
+      "atl": 0.0682
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "SUSHI-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.95505,
+      "fib_touches": [],
+      "ath": 1.7541,
+      "atl": 0.156
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "NEAR-USDT",
+      "session": {
+        "start": "2025-12-20T01:38:00",
+        "end": "2025-12-20T04:54:00",
+        "body_high": 1.523,
+        "body_low": 1.507,
+        "wick_high": 1.523,
+        "wick_low": 1.507
+      },
+      "midline_touch": {
+        "time": "2025-12-26T02:20:00",
+        "price": 1.515
+      },
+      "fib50": 3.647,
+      "fib_touches": [],
+      "ath": 5.882,
+      "atl": 1.412
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "RNDR-USDT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 7.13505,
+      "fib_touches": [],
+      "ath": 11.7613,
+      "atl": 2.5088
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "HNT-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 3.7835,
+      "fib_touches": [],
+      "ath": 6.1,
+      "atl": 1.467
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "XSGD-USDC",
+      "session": {
+        "start": "2025-12-20T01:03:00",
+        "end": "2025-12-20T03:31:00",
+        "body_high": 0.7747,
+        "body_low": 0.7738,
+        "wick_high": 0.7747,
+        "wick_low": 0.7738
+      },
+      "midline_touch": {
+        "time": "2025-12-20T14:40:00",
+        "price": 0.7742500000000001
+      },
+      "fib50": 1.24315,
+      "fib_touches": [],
+      "ath": 1.7262,
+      "atl": 0.7601
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "BIO-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.17765999999999998,
+      "fib_touches": [],
+      "ath": 0.32636,
+      "atl": 0.02896
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "APR-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.4202,
+      "fib_touches": [],
+      "ath": 0.7492,
+      "atl": 0.0912
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "DOT-USDT",
+      "session": {
+        "start": "2025-12-13T00:29:00",
+        "end": "2025-12-13T03:33:00",
+        "body_high": 2.04,
+        "body_low": 2.01,
+        "wick_high": 2.04,
+        "wick_low": 2.01
+      },
+      "midline_touch": {
+        "time": "2025-12-14T03:30:00",
+        "price": 2.025
+      },
+      "fib50": 4.625,
+      "fib_touches": [],
+      "ath": 7.59,
+      "atl": 1.66
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "ACH-USDT",
+      "session": {
+        "start": "2023-10-14T00:25:00",
+        "end": "2023-10-14T00:26:00",
+        "body_high": 0.013367,
+        "body_low": 0.013192,
+        "wick_high": 0.013367,
+        "wick_low": 0.013192
+      },
+      "midline_touch": {
+        "time": "2023-10-14T11:47:00",
+        "price": 0.0132795
+      },
+      "fib50": 0.029627499999999998,
+      "fib_touches": [],
+      "ath": 0.052,
+      "atl": 0.007255
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "DOT-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 4.6315,
+      "fib_touches": [],
+      "ath": 7.609,
+      "atl": 1.654
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "USD1-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.0047,
+      "fib_touches": [],
+      "ath": 1.0144,
+      "atl": 0.995
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "EURC-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.105,
+      "fib_touches": [],
+      "ath": 1.149,
+      "atl": 1.061
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "BNKR-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.00066535,
+      "fib_touches": [],
+      "ath": 0.00118,
+      "atl": 0.0001507
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "FARTCOIN-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.9368500000000001,
+      "fib_touches": [],
+      "ath": 1.6946,
+      "atl": 0.1791
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "AUDD-USDC",
+      "session": {
+        "start": "2025-12-20T03:12:00",
+        "end": "2025-12-20T03:13:00",
+        "body_high": 0.6625,
+        "body_low": 0.6623,
+        "wick_high": 0.6625,
+        "wick_low": 0.6623
+      },
+      "midline_touch": {
+        "time": "2025-12-25T14:19:00",
+        "price": 0.6624
+      },
+      "fib50": 2.04025,
+      "fib_touches": [],
+      "ath": 3.4998,
+      "atl": 0.5807
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "SEI-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.27059,
+      "fib_touches": [],
+      "ath": 0.4357,
+      "atl": 0.10548
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "JITOSOL-USD",
+      "session": {
+        "start": "2025-12-20T00:02:00",
+        "end": "2025-12-20T04:30:00",
+        "body_high": 157.95,
+        "body_low": 156.43,
+        "wick_high": 157.95,
+        "wick_low": 156.43
+      },
+      "midline_touch": {
+        "time": "2025-12-22T23:17:00",
+        "price": 157.19
+      },
+      "fib50": 229.31,
+      "fib_touches": [],
+      "ath": 311.93,
+      "atl": 146.69
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "DAI-USDC",
+      "session": {
+        "start": "2022-07-09T01:21:00",
+        "end": "2022-07-09T01:22:00",
+        "body_high": 0.9997,
+        "body_low": 0.9995,
+        "wick_high": 0.9997,
+        "wick_low": 0.9995
+      },
+      "midline_touch": {
+        "time": "2022-07-13T14:49:00",
+        "price": 0.9996
+      },
+      "fib50": 0.9969910000000001,
+      "fib_touches": [],
+      "ath": 1.012528,
+      "atl": 0.981454
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "TRU-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0482,
+      "fib_touches": [],
+      "ath": 0.0887,
+      "atl": 0.0077
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "PROMPT-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.33195,
+      "fib_touches": [],
+      "ath": 0.62,
+      "atl": 0.0439
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "ATOM-USDT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 4.5055,
+      "fib_touches": [],
+      "ath": 7.174,
+      "atl": 1.837
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "ARPA-USD",
+      "session": {
+        "start": "2025-12-20T00:32:00",
+        "end": "2025-12-20T04:43:00",
+        "body_high": 0.0123,
+        "body_low": 0.0121,
+        "wick_high": 0.0123,
+        "wick_low": 0.0121
+      },
+      "midline_touch": {
+        "time": "2025-12-26T01:10:00",
+        "price": 0.012199999999999999
+      },
+      "fib50": 0.0408,
+      "fib_touches": [],
+      "ath": 0.0704,
+      "atl": 0.0112
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "KRL-USD",
+      "session": {
+        "start": "2025-12-20T00:08:00",
+        "end": "2025-12-20T04:44:00",
+        "body_high": 0.2046,
+        "body_low": 0.2013,
+        "wick_high": 0.2046,
+        "wick_low": 0.2013
+      },
+      "midline_touch": {
+        "time": "2025-12-21T01:38:00",
+        "price": 0.20295000000000002
+      },
+      "fib50": 0.39949999999999997,
+      "fib_touches": [],
+      "ath": 0.609,
+      "atl": 0.19
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "OSMO-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.27490000000000003,
+      "fib_touches": [],
+      "ath": 0.5007,
+      "atl": 0.0491
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "MSOL-USD",
+      "session": {
+        "start": "2025-12-20T02:54:00",
+        "end": "2025-12-20T04:22:00",
+        "body_high": 169.49,
+        "body_low": 168.85,
+        "wick_high": 169.49,
+        "wick_low": 168.85
+      },
+      "midline_touch": {
+        "time": "2025-12-23T01:56:00",
+        "price": 169.17000000000002
+      },
+      "fib50": 239.915,
+      "fib_touches": [],
+      "ath": 358.0,
+      "atl": 121.83
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "SHIB-USDT",
+      "session": {
+        "start": "2025-12-20T00:04:00",
+        "end": "2025-12-20T00:18:00",
+        "body_high": 7.5e-06,
+        "body_low": 7.5e-06,
+        "wick_high": 7.5e-06,
+        "wick_low": 7.5e-06
+      },
+      "midline_touch": {
+        "time": "2025-12-20T11:58:00",
+        "price": 7.5e-06
+      },
+      "fib50": 1.595e-05,
+      "fib_touches": [],
+      "ath": 2.49e-05,
+      "atl": 7e-06
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "OMNI-USD",
+      "session": {
+        "start": "2025-12-20T03:25:00",
+        "end": "2025-12-20T04:06:00",
+        "body_high": 1.346,
+        "body_low": 1.336,
+        "wick_high": 1.346,
+        "wick_low": 1.336
+      },
+      "midline_touch": {
+        "time": "2025-12-26T12:16:00",
+        "price": 1.3410000000000002
+      },
+      "fib50": 5.794499999999999,
+      "fib_touches": [],
+      "ath": 10.54,
+      "atl": 1.049
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "CVX-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 3.8365,
+      "fib_touches": [],
+      "ath": 6.178,
+      "atl": 1.495
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "PRO-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.8927,
+      "fib_touches": [],
+      "ath": 1.48,
+      "atl": 0.3054
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "MNDE-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.120305,
+      "fib_touches": [],
+      "ath": 0.20343,
+      "atl": 0.03718
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "PRIME-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 8.4365,
+      "fib_touches": [],
+      "ath": 16.326,
+      "atl": 0.547
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "STG-USDT",
+      "session": {
+        "start": "2023-03-11T00:04:00",
+        "end": "2023-03-11T04:01:00",
+        "body_high": 0.6896,
+        "body_low": 0.6453,
+        "wick_high": 0.6896,
+        "wick_low": 0.6453
+      },
+      "midline_touch": {
+        "time": "2023-03-12T20:42:00",
+        "price": 0.66745
+      },
+      "fib50": 0.91505,
+      "fib_touches": [],
+      "ath": 1.5,
+      "atl": 0.3301
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "FAI-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.016780000000000003,
+      "fib_touches": [],
+      "ath": 0.03128,
+      "atl": 0.00228
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "RED-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.6032,
+      "fib_touches": [],
+      "ath": 1.0106,
+      "atl": 0.1958
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "SHIB-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.5975000000000002e-05,
+      "fib_touches": [],
+      "ath": 2.497e-05,
+      "atl": 6.98e-06
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "LOOM-USDC",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.14565450000000002,
+      "fib_touches": [],
+      "ath": 0.26,
+      "atl": 0.031309
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "PYTH-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.16045,
+      "fib_touches": [],
+      "ath": 0.2676,
+      "atl": 0.0533
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "OXT-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.07405,
+      "fib_touches": [],
+      "ath": 0.1258,
+      "atl": 0.0223
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "DIMO-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.083675,
+      "fib_touches": [],
+      "ath": 0.15499,
+      "atl": 0.01236
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "KITE-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.09789,
+      "fib_touches": [],
+      "ath": 0.13493,
+      "atl": 0.06085
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "BTC-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 100358.345,
+      "fib_touches": [],
+      "ath": 126296.0,
+      "atl": 74420.69
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "ATA-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.13795,
+      "fib_touches": [],
+      "ath": 0.2193,
+      "atl": 0.0566
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "LSETH-USD",
+      "session": {
+        "start": "2025-12-13T04:00:00",
+        "end": "2025-12-13T04:01:00",
+        "body_high": 3322.68,
+        "body_low": 3307.91,
+        "wick_high": 3322.68,
+        "wick_low": 3307.91
+      },
+      "midline_touch": {
+        "time": "2025-12-14T23:58:00",
+        "price": 3315.295
+      },
+      "fib50": 3449.055,
+      "fib_touches": [],
+      "ath": 5363.62,
+      "atl": 1534.49
+    },
+    {
+      "exchange": "coinbase",
+      "symbol": "AAVE-USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 249.76,
+      "fib_touches": [],
+      "ath": 385.59,
+      "atl": 113.93
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "0GEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.952,
+      "fib_touches": [],
+      "ath": 1.049,
+      "atl": 0.855
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "0GUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.125,
+      "fib_touches": [],
+      "ath": 1.244,
+      "atl": 1.006
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "1INCHEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.1252,
+      "fib_touches": [],
+      "ath": 0.1269,
+      "atl": 0.1235
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "1INCHUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.1474,
+      "fib_touches": [],
+      "ath": 0.1492,
+      "atl": 0.1456
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "2ZEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.10376,
+      "fib_touches": [],
+      "ath": 0.1092,
+      "atl": 0.09832
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "2ZUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.12219000000000001,
+      "fib_touches": [],
+      "ath": 0.1287,
+      "atl": 0.11568
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AAVEETH",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0517,
+      "atl": 0.0517
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AAVEEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 128.95,
+      "fib_touches": [],
+      "ath": 131.4,
+      "atl": 126.5
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AAVEGBP",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 112.495,
+      "fib_touches": [],
+      "ath": 114.52,
+      "atl": 110.47
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AAVEUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 151.72,
+      "fib_touches": [],
+      "ath": 154.8,
+      "atl": 148.64
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AAVEXBT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0017295000000000001,
+      "fib_touches": [],
+      "ath": 0.001742,
+      "atl": 0.001717
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ABEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0039074999999999995,
+      "fib_touches": [],
+      "ath": 0.003959,
+      "atl": 0.003856
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ABUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0046005,
+      "fib_touches": [],
+      "ath": 0.004668,
+      "atl": 0.004533
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACAEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.00822,
+      "fib_touches": [],
+      "ath": 0.00864,
+      "atl": 0.0078
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACAUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.009745,
+      "fib_touches": [],
+      "ath": 0.00996,
+      "atl": 0.00953
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACHEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.006595,
+      "fib_touches": [],
+      "ath": 0.00671,
+      "atl": 0.00648
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACHUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.00779,
+      "fib_touches": [],
+      "ath": 0.00796,
+      "atl": 0.00762
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACTEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.03839,
+      "fib_touches": [],
+      "ath": 0.04129,
+      "atl": 0.03549
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACTUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.043645,
+      "fib_touches": [],
+      "ath": 0.04622,
+      "atl": 0.04107
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACXEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0445,
+      "atl": 0.0445
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ACXUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.049,
+      "atl": 0.049
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAAUD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.520405,
+      "fib_touches": [],
+      "ath": 0.53065,
+      "atl": 0.51016
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAETH",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.00011915,
+      "fib_touches": [],
+      "ath": 0.0001202,
+      "atl": 0.0001181
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.296799,
+      "fib_touches": [],
+      "ath": 0.303598,
+      "atl": 0.29
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAGBP",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.25882499999999997,
+      "fib_touches": [],
+      "ath": 0.26465,
+      "atl": 0.253
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.3500215,
+      "fib_touches": [],
+      "ath": 0.357968,
+      "atl": 0.342075
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAUSDC",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.3494745,
+      "fib_touches": [],
+      "ath": 0.356773,
+      "atl": 0.342176
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAUSDT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.35009999999999997,
+      "fib_touches": [],
+      "ath": 0.357691,
+      "atl": 0.342509
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADAXBT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 3.98e-06,
+      "fib_touches": [],
+      "ath": 4.02e-06,
+      "atl": 3.94e-06
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADIEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.9988,
+      "fib_touches": [],
+      "ath": 1.0016,
+      "atl": 0.996
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADIUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 1.1766,
+      "fib_touches": [],
+      "ath": 1.181,
+      "atl": 1.1722
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADXEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.09217,
+      "fib_touches": [],
+      "ath": 0.09434,
+      "atl": 0.09
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "ADXUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.10772,
+      "atl": 0.10772
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AEROEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.41035,
+      "fib_touches": [],
+      "ath": 0.4181,
+      "atl": 0.4026
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AEROUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.4833,
+      "fib_touches": [],
+      "ath": 0.4932,
+      "atl": 0.4734
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.13135,
+      "fib_touches": [],
+      "ath": 0.1326,
+      "atl": 0.1301
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AEVOEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0313,
+      "fib_touches": [],
+      "ath": 0.0319,
+      "atl": 0.0307
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AEVOUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0369,
+      "fib_touches": [],
+      "ath": 0.0377,
+      "atl": 0.0361
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AGLDEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AGLDUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI16ZEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI16ZUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI16ZUSDC",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI16ZUSDT",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI3EUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0175,
+      "fib_touches": [],
+      "ath": 0.0177,
+      "atl": 0.0173
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AI3USD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.0206,
+      "fib_touches": [],
+      "ath": 0.0209,
+      "atl": 0.0203
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AINUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": 0.04621,
+      "fib_touches": [],
+      "ath": 0.04711,
+      "atl": 0.04531
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AIOEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0,
+      "atl": 0.0
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AIOUSD",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.1,
+      "atl": 0.1
+    },
+    {
+      "exchange": "kraken",
+      "symbol": "AIOZEUR",
+      "session": null,
+      "midline_touch": null,
+      "fib50": null,
+      "fib_touches": [],
+      "ath": 0.0819,
+      "atl": 0.0819
+    }
+  ]
+}
