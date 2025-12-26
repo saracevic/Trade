@@ -4,6 +4,7 @@ Main trade scanner implementation with multi-exchange support.
 """
 
 import asyncio
+import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from pathlib import Path
@@ -269,7 +270,6 @@ class TradeScanner(LoggerMixin):
         self.logger.info(f"Fetching stats for {len(perpetual_products)} Coinbase products...")
         
         # Fetch stats for each product with rate limiting
-        import time
         api = self.apis.get('coinbase')
         
         for i, product in enumerate(perpetual_products):
@@ -286,9 +286,16 @@ class TradeScanner(LoggerMixin):
                     self.logger.debug(f"No stats available for {product_id}")
                     continue
                 
-                # Parse stats data
-                price = float(stats.get('last', 0))
-                volume = float(stats.get('volume', 0))
+                # Parse stats data with proper validation
+                last_price_str = stats.get('last', '0')
+                volume_str = stats.get('volume', '0')
+                
+                try:
+                    price = float(last_price_str) if last_price_str else 0.0
+                    volume = float(volume_str) if volume_str else 0.0
+                except (ValueError, TypeError) as e:
+                    self.logger.debug(f"Invalid price/volume data for {product_id}: {e}")
+                    continue
                 
                 if price > 0 and volume > 0:
                     pair = TradingPair(
@@ -333,7 +340,6 @@ class TradeScanner(LoggerMixin):
         
         # Fetch ticker data in batches (Kraken allows multiple pairs in one request)
         # But we'll batch them to avoid hitting request limits
-        import time
         api = self.apis.get('kraken')
         
         batch_size = 10  # Process 10 pairs per request to avoid URL length issues
@@ -361,8 +367,21 @@ class TradeScanner(LoggerMixin):
                         last_price = ticker_info.get('c', [0, 0])
                         volume_data = ticker_info.get('v', [0, 0])
                         
-                        price = float(last_price[0]) if isinstance(last_price, list) and len(last_price) > 0 else 0.0
-                        volume = float(volume_data[1]) if isinstance(volume_data, list) and len(volume_data) > 1 else 0.0
+                        # Safely extract and convert price and volume
+                        price = 0.0
+                        volume = 0.0
+                        
+                        if isinstance(last_price, list) and len(last_price) > 0:
+                            try:
+                                price = float(last_price[0])
+                            except (ValueError, TypeError):
+                                pass
+                        
+                        if isinstance(volume_data, list) and len(volume_data) > 1:
+                            try:
+                                volume = float(volume_data[1])
+                            except (ValueError, TypeError):
+                                pass
                         
                         if price > 0 and volume > 0:
                             pair = TradingPair(
