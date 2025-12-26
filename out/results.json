@@ -1,0 +1,211 @@
+{
+  "generated_at": "2025-12-26T11:03:54.257559+00:00",
+  "results": [
+    {
+      "symbol": "BTCUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 88294.8,
+        "body_low": 87926.7,
+        "wick_high": 88294.8,
+        "wick_low": 87926.7
+      },
+      "midline_touch": {
+        "time": "2025-12-20T10:24:00",
+        "price": 88110.75
+      },
+      "fib50": 75394.75,
+      "fib_touches": [],
+      "ath": 126208.5,
+      "atl": 24581.0
+    },
+    {
+      "symbol": "ETHUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 2992.81,
+        "body_low": 2969.23,
+        "wick_high": 2992.81,
+        "wick_low": 2969.23
+      },
+      "midline_touch": {
+        "time": "2025-12-20T05:08:00",
+        "price": 2981.02
+      },
+      "fib50": 3170.835,
+      "fib_touches": [],
+      "ath": 4957.67,
+      "atl": 1384.0
+    },
+    {
+      "symbol": "SOLUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 126.44,
+        "body_low": 125.2,
+        "wick_high": 126.44,
+        "wick_low": 125.2
+      },
+      "midline_touch": {
+        "time": "2025-12-20T11:10:00",
+        "price": 125.82
+      },
+      "fib50": 154.10000000000002,
+      "fib_touches": [],
+      "ath": 295.6,
+      "atl": 12.6
+    },
+    {
+      "symbol": "ZBTUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 0.0822,
+        "body_low": 0.0777,
+        "wick_high": 0.0822,
+        "wick_low": 0.0777
+      },
+      "midline_touch": {
+        "time": "2025-12-20T05:03:00",
+        "price": 0.07995
+      },
+      "fib50": 0.4094,
+      "fib_touches": [],
+      "ath": 0.75,
+      "atl": 0.0688
+    },
+    {
+      "symbol": "0GUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 0.7886,
+        "body_low": 0.7594,
+        "wick_high": 0.7886,
+        "wick_low": 0.7594
+      },
+      "midline_touch": {
+        "time": "2025-12-20T07:08:00",
+        "price": 0.774
+      },
+      "fib50": 3.9221500000000002,
+      "fib_touches": [],
+      "ath": 7.15,
+      "atl": 0.6943
+    },
+    {
+      "symbol": "BEATUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 2.0839,
+        "body_low": 1.92,
+        "wick_high": 2.0839,
+        "wick_low": 1.92
+      },
+      "midline_touch": {
+        "time": "2025-12-20T05:04:00",
+        "price": 2.00195
+      },
+      "fib50": 2.3529,
+      "fib_touches": [
+        {
+          "level": 0.5,
+          "touch": {
+            "time": "2025-12-20T18:51:00",
+            "price": 2.3529
+          }
+        }
+      ],
+      "ath": 4.5,
+      "atl": 0.2058
+    },
+    {
+      "symbol": "XRPUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 1.9091,
+        "body_low": 1.8923,
+        "wick_high": 1.9091,
+        "wick_low": 1.8923
+      },
+      "midline_touch": {
+        "time": "2025-12-21T13:30:00",
+        "price": 1.9007
+      },
+      "fib50": 2.0229,
+      "fib_touches": [],
+      "ath": 3.6646,
+      "atl": 0.3812
+    },
+    {
+      "symbol": "ZECUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 451.87,
+        "body_low": 434.21,
+        "wick_high": 451.87,
+        "wick_low": 434.21
+      },
+      "midline_touch": {
+        "time": "2025-12-20T05:20:00",
+        "price": 443.03999999999996
+      },
+      "fib50": 395.34,
+      "fib_touches": [],
+      "ath": 775.0,
+      "atl": 15.68
+    },
+    {
+      "symbol": "LIGHTUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 2.5887,
+        "body_low": 2.2434,
+        "wick_high": 2.5887,
+        "wick_low": 2.2434
+      },
+      "midline_touch": {
+        "time": "2025-12-21T20:45:00",
+        "price": 2.41605
+      },
+      "fib50": 2.5845,
+      "fib_touches": [
+        {
+          "level": 0.5,
+          "touch": {
+            "time": "2025-12-20T06:47:00",
+            "price": 2.5845
+          }
+        }
+      ],
+      "ath": 4.6995,
+      "atl": 0.4695
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "session": {
+        "start": "2025-12-20T00:00:00",
+        "end": "2025-12-20T05:00:00",
+        "body_high": 0.13222,
+        "body_low": 0.13061,
+        "wick_high": 0.13222,
+        "wick_low": 0.13061
+      },
+      "midline_touch": {
+        "time": "2025-12-20T05:33:00",
+        "price": 0.131415
+      },
+      "fib50": 0.26879,
+      "fib_touches": [],
+      "ath": 0.485,
+      "atl": 0.05258
+    }
+  ]
+}
