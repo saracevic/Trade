@@ -37,16 +37,38 @@
 
   <script>
     async function load(){
-      // Try local published results.json first; if unavailable, fall back to raw.githubusercontent (repo main branch)
       try{
-        const res = await fetch('./results.json');
-        if(res.ok) return await res.json();
-      }catch(e){/* continue to fallback */}
-      // fallback: raw.githubusercontent URL (bypass Pages publishing issues)
-      const raw = `https://raw.githubusercontent.com/saracevic/Trade/main/results.json?t=${Date.now()}`;
-      const fres = await fetch(raw);
-      if(!fres.ok) throw new Error('Fallback fetch failed: '+fres.status);
-      return await fres.json();
+        // GitHub Pages URL'ini dene
+        const pagesUrl = './results.json?t=' + Date.now();
+        const res = await fetch(pagesUrl);
+        if(res.ok) {
+          const data = await res.json();
+          console.log('Loaded from GitHub Pages:', data);
+          return data;
+        }
+      } catch(e){
+        console.error('GitHub Pages fetch failed:', e);
+      }
+      
+      try{
+        // Raw GitHub URL'ini dene
+        const rawUrl = 'https://raw.githubusercontent.com/saracevic/Trade/gh-pages/results.json?t=' + Date.now();
+        const res = await fetch(rawUrl);
+        if(res.ok) {
+          const data = await res.json();
+          console.log('Loaded from raw GitHub:', data);
+          return data;
+        }
+      } catch(e){
+        console.error('Raw GitHub fetch failed:', e);
+      }
+      
+      // Hiçbiri çalışmazsa varsayılan boş veri dön
+      return {
+        generated_at: new Date().toISOString(),
+        results: [],
+        error: 'No data available. Please run the scanner workflow.'
+      };
     }
 
     function render(data){
