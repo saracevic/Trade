@@ -57,12 +57,25 @@ class TradingPair(BaseModel):
             return datetime.fromtimestamp(v)
         return datetime.utcnow()
     
-    class Config:
-        """Pydantic model configuration."""
-        json_encoders = {
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert trading pair to dictionary representation.
+        
+        Returns:
+            Dict[str, Any]: Dictionary representation of the trading pair
+        """
+        data = self.model_dump()
+        # Convert datetime to ISO format string
+        if isinstance(data.get('timestamp'), datetime):
+            data['timestamp'] = data['timestamp'].isoformat()
+        return data
+    
+    model_config = {
+        'json_encoders': {
             datetime: lambda v: v.isoformat()
-        }
-        use_enum_values = True
+        },
+        'use_enum_values': True
+    }
 
 
 class ScannerConfig(BaseModel):
@@ -158,9 +171,9 @@ class ScannerConfig(BaseModel):
         with open(json_path, 'w') as f:
             json.dump(self.model_dump(), f, indent=2)
     
-    class Config:
-        """Pydantic model configuration."""
-        use_enum_values = True
+    model_config = {
+        'use_enum_values': True
+    }
 
 
 class ScanResult(BaseModel):
@@ -183,8 +196,8 @@ class ScanResult(BaseModel):
     success: bool = Field(default=True)
     error: Optional[str] = Field(default=None)
     
-    class Config:
-        """Pydantic model configuration."""
-        json_encoders = {
+    model_config = {
+        'json_encoders': {
             datetime: lambda v: v.isoformat()
         }
+    }
