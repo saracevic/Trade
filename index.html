@@ -37,9 +37,16 @@
 
   <script>
     async function load(){
-      const res = await fetch('./results.json');
-      const j = await res.json();
-      return j;
+      // Try local published results.json first; if unavailable, fall back to raw.githubusercontent (repo main branch)
+      try{
+        const res = await fetch('./results.json');
+        if(res.ok) return await res.json();
+      }catch(e){/* continue to fallback */}
+      // fallback: raw.githubusercontent URL (bypass Pages publishing issues)
+      const raw = `https://raw.githubusercontent.com/saracevic/Trade/main/results.json?t=${Date.now()}`;
+      const fres = await fetch(raw);
+      if(!fres.ok) throw new Error('Fallback fetch failed: '+fres.status);
+      return await fres.json();
     }
 
     function render(data){
