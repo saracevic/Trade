@@ -1,212 +1,209 @@
+#!/usr/bin/env python3
 """
-Main Entry Point
-Trade Scanner Application - Professional multi-exchange cryptocurrency scanner.
+Trade Scanner - Main entry point
+Runs the trade scanner with CLI interface and comprehensive logging.
 """
 
-import asyncio
-import argparse
 import sys
+import logging
+import argparse
 from pathlib import Path
+from datetime import datetime
+from typing import Optional
 
-from src.models.trade import ScannerConfig
-from src.scanner.core import TradeScanner
-from src.utils.logger import setup_logger
-from config.settings import get_settings
+from src.scanner import TradeScanner
+from src.api import APIClient
+
+
+def setup_logging(log_level: int = logging.INFO, log_file: Optional[str] = None) -> None:
+    """
+    Configure logging for the application.
+    
+    Args:
+        log_level: Logging level (default: INFO)
+        log_file: Optional log file path (default: logs/trade_scanner.log)
+    """
+    # Create logs directory if it doesn't exist
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    
+    # Set default log file path
+    if log_file is None:
+        log_file = log_dir / "trade_scanner.log"
+    else:
+        log_file = Path(log_file)
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Configure logging format
+    log_format = (
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+    
+    # File handler
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(log_level)
+    file_handler.setFormatter(
+        logging.Formatter(log_format, datefmt=timestamp_format)
+    )
+    logger.addHandler(file_handler)
+    
+    # Console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(
+        logging.Formatter(log_format, datefmt=timestamp_format)
+    )
+    logger.addHandler(console_handler)
+    
+    logger.info(f"Logging initialized - Level: {logging.getLevelName(log_level)}")
+    logger.info(f"Log file: {log_file}")
 
 
 def parse_arguments() -> argparse.Namespace:
     """
-    Parse command line arguments.
+    Parse command-line arguments.
     
     Returns:
-        Parsed command line arguments
+        Parsed arguments
     """
     parser = argparse.ArgumentParser(
-        description="Trade Scanner - Multi-exchange cryptocurrency scanner",
+        description="Trade Scanner - Monitor and scan trading opportunities",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py                          # Run with default settings
-  python main.py --exchanges binance      # Scan only Binance
-  python main.py --min-volume 10000       # Set minimum volume filter
-  python main.py --output results.json    # Save to custom file
-  python main.py --config custom.json     # Load custom configuration
+  %(prog)s --scan                 # Run scanner with default settings
+  %(prog)s --scan --interval 60   # Run scanner every 60 seconds
+  %(prog)s --debug                # Run with debug logging
+  %(prog)s --config config.json   # Use custom configuration file
         """
     )
     
     parser.add_argument(
-        '--config',
+        "--scan",
+        action="store_true",
+        help="Run the trade scanner"
+    )
+    
+    parser.add_argument(
+        "--api",
+        action="store_true",
+        help="Start the API server"
+    )
+    
+    parser.add_argument(
+        "--interval",
+        type=int,
+        default=30,
+        help="Scan interval in seconds (default: 30)"
+    )
+    
+    parser.add_argument(
+        "--config",
         type=str,
-        help='Path to configuration JSON file'
+        default="config.json",
+        help="Path to configuration file (default: config.json)"
     )
     
     parser.add_argument(
-        '--exchanges',
-        nargs='+',
-        choices=['binance', 'coinbase', 'kraken'],
-        help='Exchanges to scan (space-separated)'
-    )
-    
-    parser.add_argument(
-        '--min-volume',
-        type=float,
-        help='Minimum 24h trading volume filter'
-    )
-    
-    parser.add_argument(
-        '--min-price',
-        type=float,
-        help='Minimum price filter'
-    )
-    
-    parser.add_argument(
-        '--output',
+        "--log-level",
         type=str,
-        default='out/results.json',
-        help='Output file path (default: out/results.json)'
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Logging level (default: INFO)"
     )
     
     parser.add_argument(
-        '--log-level',
-        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        default='INFO',
-        help='Logging level (default: INFO)'
+        "--log-file",
+        type=str,
+        help="Path to log file (default: logs/trade_scanner.log)"
     )
     
     parser.add_argument(
-        '--no-cache',
-        action='store_true',
-        help='Disable result caching'
+        "--debug",
+        action="store_true",
+        help="Enable debug mode (sets log level to DEBUG)"
     )
     
     parser.add_argument(
-        '--format',
-        choices=['json', 'csv'],
-        default='json',
-        help='Output format (default: json)'
+        "--version",
+        action="version",
+        version="%(prog)s 1.0.0"
     )
     
     return parser.parse_args()
 
 
-def create_config(args: argparse.Namespace) -> ScannerConfig:
+def main() -> int:
     """
-    Create scanner configuration from arguments and settings.
+    Main entry point for the trade scanner application.
     
-    Args:
-        args: Parsed command line arguments
-        
     Returns:
-        ScannerConfig instance
+        Exit code (0 for success, 1 for failure)
     """
-    # Load settings
-    settings = get_settings()
+    args = parse_arguments()
     
-    # If config file specified, load it
-    if args.config:
-        config = ScannerConfig.from_json(args.config)
-    else:
-        # Create config from settings and arguments
-        config = ScannerConfig(
-            api_keys=settings.get_api_keys(),
-            api_secrets=settings.get_api_secrets(),
-            log_level=args.log_level,
-            min_volume=args.min_volume if args.min_volume is not None else settings.min_volume,
-            min_price=args.min_price if args.min_price is not None else settings.min_price,
-            enabled_exchanges=args.exchanges if args.exchanges else settings.enabled_exchanges,
-            cache_duration=0 if args.no_cache else 300,
-            timeout=settings.request_timeout,
-            retry_attempts=settings.max_retries,
-            output_dir=str(settings.output_dir)
-        )
+    # Determine log level
+    log_level = logging.DEBUG if args.debug else getattr(logging, args.log_level)
     
-    return config
-
-
-async def main_async(args: argparse.Namespace) -> int:
-    """
-    Async main function.
+    # Setup logging
+    setup_logging(log_level=log_level, log_file=args.log_file)
+    logger = logging.getLogger(__name__)
     
-    Args:
-        args: Parsed command line arguments
-        
-    Returns:
-        Exit code (0 for success, non-zero for failure)
-    """
-    logger = setup_logger(__name__, level=args.log_level)
+    logger.info("=" * 60)
+    logger.info("Trade Scanner Application Started")
+    logger.info(f"Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    logger.info("=" * 60)
     
     try:
-        # Create configuration
-        config = create_config(args)
+        # Validate configuration file
+        config_path = Path(args.config)
+        if not config_path.exists():
+            logger.warning(f"Configuration file not found: {config_path}")
+            logger.info("Using default configuration")
+        else:
+            logger.info(f"Using configuration file: {config_path}")
         
-        logger.info("=" * 70)
-        logger.info("Trade Scanner v2.0.0 - Starting")
-        logger.info("=" * 70)
-        logger.info(f"Enabled exchanges: {', '.join(config.enabled_exchanges)}")
-        logger.info(f"Min volume: {config.min_volume}")
-        logger.info(f"Min price: {config.min_price}")
-        logger.info(f"Output: {args.output}")
-        logger.info("=" * 70)
-        
-        # Initialize scanner
-        scanner = TradeScanner(config)
-        
-        # Run scan
-        logger.info("Starting scan...")
-        results = await scanner.scan_all_exchanges()
-        
-        # Display results summary
-        logger.info("=" * 70)
-        logger.info("Scan Results Summary:")
-        logger.info("=" * 70)
-        
-        total_pairs = 0
-        for exchange, result in results.items():
-            status = "✓" if result.success else "✗"
-            pairs_count = len(result.pairs)
-            total_pairs += pairs_count
-            
-            logger.info(
-                f"{status} {exchange:12} | "
-                f"{pairs_count:5} pairs | "
-                f"{result.duration:6.2f}s"
+        # Run scanner
+        if args.scan:
+            logger.info(f"Starting trade scanner (interval: {args.interval}s)")
+            scanner = TradeScanner(
+                config_file=args.config,
+                scan_interval=args.interval
             )
-            
-            if not result.success and result.error:
-                logger.error(f"  Error: {result.error}")
+            scanner.run()
         
-        logger.info("=" * 70)
-        logger.info(f"Total pairs found: {total_pairs}")
-        logger.info("=" * 70)
+        # Run API server
+        elif args.api:
+            logger.info("Starting API server")
+            api_client = APIClient(config_file=args.config)
+            api_client.run()
         
-        # Export results
-        logger.info(f"Exporting results to {args.output}...")
-        scanner.export_results(
-            output_format=args.format,
-            filepath=args.output
-        )
+        # Default: run both scanner and API
+        else:
+            logger.info("No specific action specified. Use --scan or --api")
+            logger.info("Run with --help for usage information")
+            return 1
         
-        logger.info("Scan completed successfully!")
         return 0
-        
+    
     except KeyboardInterrupt:
-        logger.warning("Scan interrupted by user")
-        return 130
-        
+        logger.info("Application interrupted by user")
+        return 0
+    
     except Exception as e:
         logger.error(f"Fatal error: {str(e)}", exc_info=True)
         return 1
-
-
-def main() -> int:
-    """
-    Main entry point.
     
-    Returns:
-        Exit code
-    """
-    args = parse_arguments()
-    return asyncio.run(main_async(args))
+    finally:
+        logger.info("=" * 60)
+        logger.info("Trade Scanner Application Stopped")
+        logger.info(f"Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+        logger.info("=" * 60)
 
 
 if __name__ == "__main__":
