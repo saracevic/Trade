@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trade Scanner Results</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:12px}
+    header{display:flex;flex-direction:column;gap:6px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    input[type=search]{padding:8px;border-radius:6px;border:1px solid #ddd;min-width:160px}
+    label{display:inline-flex;align-items:center;gap:6px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px}
+    th{background:#f6f6f6}
+    @media(min-width:900px){th,td{font-size:13px}}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef;border:1px solid #cce;font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Binance Perp Scan</h2>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Sembol ara (ör. BTCUSDT)">
+      <label><input id="f_mid" type="checkbox"> Sadece Asia 50% midline temas</label>
+      <label><input id="f_fib" type="checkbox"> Sadece Fib50 temas</label>
+      <button id="refresh">Yenile</button>
+      <div style="margin-left:auto"><a href="/results.json">results.json</a></div>
+    </div>
+  </header>
+
+  <div id="summary"></div>
+  <div id="tablewrap"></div>
+
+  <script>
+    async function load(){
+      const res = await fetch('./results.json');
+      const j = await res.json();
+      return j;
+    }
+
+    function render(data){
+      const results = data.results || [];
+      document.getElementById('summary').innerText = `Oluşturuldu: ${data.generated_at} — ${results.length} sembol`;
+
+      const q = document.getElementById('q').value.trim().toUpperCase();
+      const fmid = document.getElementById('f_mid').checked;
+      const ffib = document.getElementById('f_fib').checked;
+
+      const rows = results.filter(r=>{
+        if(q && !r.symbol.includes(q)) return false;
+        if(fmid && !r.midline_touch) return false;
+        if(ffib && (!r.fib_touches || r.fib_touches.length===0)) return false;
+        return true;
+      });
+
+      const headers = ['Symbol','Asia Midline Touch','Fib50','ATH','ATL'];
+      let html = '<table><thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+      for(const r of rows){
+        const mid = r.midline_touch ? `<span class="badge">${r.midline_touch.price} @ ${r.midline_touch.time}</span>` : '';
+        const fib = r.fib_touches && r.fib_touches.length? `<span class="badge">${r.fib_touches.map(ft=>ft.level+' @ '+ft.touch.time).join('<br>')}</span>` : (r.fib50? r.fib50 : '');
+        html += `<tr><td>${r.symbol}</td><td>${mid}</td><td>${fib}</td><td>${r.ath||''}</td><td>${r.atl||''}</td></tr>`;
+      }
+      html += '</tbody></table>';
+      document.getElementById('tablewrap').innerHTML = html;
+    }
+
+    async function go(){
+      try{
+        const data = await load();
+        window._scan_data = data;
+        render(data);
+      }catch(e){
+        document.getElementById('tablewrap').innerText = 'Yükleme hatası: '+e;
+      }
+    }
+
+    document.getElementById('q').addEventListener('input', ()=>render(window._scan_data));
+    document.getElementById('f_mid').addEventListener('change', ()=>render(window._scan_data));
+    document.getElementById('f_fib').addEventListener('change', ()=>render(window._scan_data));
+    document.getElementById('refresh').addEventListener('click', go);
+
+    go();
+  </script>
+</body>
+</html>
