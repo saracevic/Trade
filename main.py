@@ -36,9 +36,15 @@ async def main():
                     timestamp = scan_results[exchange_name].pairs[0].timestamp.isoformat()
                     break
         
+        # Use current time if no timestamp found
+        from datetime import datetime, timezone
+        generated_at = timestamp or datetime.now(timezone.utc).isoformat()
+        
         results = {
             'timestamp': timestamp,
-            'exchanges': {}
+            'generated_at': generated_at,
+            'exchanges': {},
+            'results': []  # For compatibility with HTML
         }
         
         for exchange, result in scan_results.items():
@@ -57,6 +63,18 @@ async def main():
         
     except Exception as e:
         logger.error(f"Error running scanner: {e}", exc_info=True)
+        # Create results.json with error message even on failure
+        from datetime import datetime, timezone
+        error_results = {
+            'generated_at': datetime.now(timezone.utc).isoformat(),
+            'timestamp': None,
+            'error': str(e),
+            'exchanges': {},
+            'results': []
+        }
+        with open('results.json', 'w') as f:
+            json.dump(error_results, f, indent=2)
+        logger.error("Created results.json with error information")
         raise
 
 if __name__ == "__main__":

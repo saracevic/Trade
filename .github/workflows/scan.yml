@@ -1,25 +1,51 @@
-name: Scan
+name: Scan and Publish
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: '0 */6 * * *'  # Her 6 saatte bir çalıştır
+  workflow_dispatch:  # Manuel tetikleme
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Run scan
-        run: python main.py
+
+      - name: Run scanner
+        run: |
+          python main.py
+          echo "Scanner completed"
+      
+      - name: Check results file
+        run: |
+          if [ -f "results.json" ]; then
+            echo "results.json exists"
+            cat results.json
+          else
+            echo "results.json not found!"
+            exit 1
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          keep_files: false
