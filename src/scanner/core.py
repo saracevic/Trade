@@ -254,43 +254,136 @@ class TradeScanner(LoggerMixin):
         """Parse Coinbase product data into TradingPair objects."""
         pairs: List[TradingPair] = []
         
+        # Filter for perpetual/spot products and limit to 100
+        perpetual_products = []
         for product in products:
+            product_id = product.get('id', '')
+            # Filter for trading pairs (typically contain '-')
+            # Avoid test/disabled products
+            if '-' in product_id and product.get('status') == 'online':
+                perpetual_products.append(product)
+        
+        # Limit to first 100 products
+        perpetual_products = perpetual_products[:100]
+        
+        self.logger.info(f"Fetching stats for {len(perpetual_products)} Coinbase products...")
+        
+        # Fetch stats for each product with rate limiting
+        import time
+        api = self.apis.get('coinbase')
+        
+        for i, product in enumerate(perpetual_products):
+            product_id = product.get('id', '')
             try:
-                # Coinbase products endpoint doesn't include price/volume
-                # Skip pairs without complete data rather than using invalid 0.0 values
-                # In a production system, we'd make additional API calls for stats
-                self.logger.debug(
-                    f"Coinbase product found: {product.get('id')} "
-                    "(price/volume data requires additional API call)"
-                )
-                # Skip for now - would need stats API call to get valid data
-                continue
-            except (ValueError, KeyError) as e:
-                self.logger.debug(f"Failed to parse Coinbase product: {e}")
+                # Add rate limiting (0.15 second delay)
+                if i > 0:
+                    time.sleep(0.15)
+                
+                self.logger.debug(f"Fetching stats for Coinbase product: {product_id}")
+                stats = api.get_product_stats(product_id)
+                
+                if not stats:
+                    self.logger.debug(f"No stats available for {product_id}")
+                    continue
+                
+                # Parse stats data
+                price = float(stats.get('last', 0))
+                volume = float(stats.get('volume', 0))
+                
+                if price > 0 and volume > 0:
+                    pair = TradingPair(
+                        symbol=product_id,
+                        exchange="coinbase",
+                        price=price,
+                        volume_24h=volume,
+                        change_24h=None  # Coinbase doesn't provide this in stats
+                    )
+                    pairs.append(pair)
+                    self.logger.debug(f"Added Coinbase pair: {product_id} (price: {price}, volume: {volume})")
+                    
+            except Exception as e:
+                self.logger.warning(f"Failed to fetch stats for Coinbase product {product_id}: {e}")
                 continue
         
+        self.logger.info(f"Successfully parsed {len(pairs)} Coinbase products with price/volume data")
         return pairs
     
     def _parse_kraken_pairs(self, data: Dict[str, Any]) -> List[TradingPair]:
         """Parse Kraken asset pairs data into TradingPair objects."""
         pairs: List[TradingPair] = []
         
-        if isinstance(data, dict) and 'result' in data:
-            for pair_name, pair_data in data['result'].items():
-                try:
-                    # Kraken asset pairs endpoint doesn't include price/volume
-                    # Skip pairs without complete data rather than using invalid 0.0 values
-                    # In a production system, we'd make additional API calls for ticker data
-                    self.logger.debug(
-                        f"Kraken pair found: {pair_name} "
-                        "(price/volume data requires additional API call)"
-                    )
-                    # Skip for now - would need ticker API call to get valid data
-                    continue
-                except (ValueError, KeyError) as e:
-                    self.logger.debug(f"Failed to parse Kraken pair: {e}")
-                    continue
+        if not isinstance(data, dict) or 'result' not in data:
+            self.logger.warning("Invalid Kraken asset pairs data format")
+            return pairs
         
+        # Get list of trading pairs
+        asset_pairs_data = data['result']
+        pair_names = list(asset_pairs_data.keys())
+        
+        # Filter for perpetual/spot pairs (exclude .d suffix which are dark pool)
+        perpetual_pairs = [
+            pair for pair in pair_names 
+            if not pair.endswith('.d')
+        ]
+        
+        # Limit to first 100 pairs
+        perpetual_pairs = perpetual_pairs[:100]
+        
+        self.logger.info(f"Fetching ticker data for {len(perpetual_pairs)} Kraken pairs...")
+        
+        # Fetch ticker data in batches (Kraken allows multiple pairs in one request)
+        # But we'll batch them to avoid hitting request limits
+        import time
+        api = self.apis.get('kraken')
+        
+        batch_size = 10  # Process 10 pairs per request to avoid URL length issues
+        for i in range(0, len(perpetual_pairs), batch_size):
+            batch = perpetual_pairs[i:i + batch_size]
+            pair_list = ','.join(batch)
+            
+            try:
+                # Add rate limiting (0.15 second delay between batches)
+                if i > 0:
+                    time.sleep(0.15)
+                
+                self.logger.debug(f"Fetching ticker for Kraken pairs: {pair_list}")
+                ticker_data = api.get_ticker(pair_list)
+                
+                if not isinstance(ticker_data, dict) or 'result' not in ticker_data:
+                    self.logger.warning(f"Invalid ticker data for batch: {pair_list}")
+                    continue
+                
+                # Parse ticker data for each pair
+                for pair_name, ticker_info in ticker_data['result'].items():
+                    try:
+                        # Kraken ticker format: {'a': [ask_price, ...], 'b': [bid_price, ...], 
+                        #                        'c': [last_price, ...], 'v': [volume_today, volume_24h], ...}
+                        last_price = ticker_info.get('c', [0, 0])
+                        volume_data = ticker_info.get('v', [0, 0])
+                        
+                        price = float(last_price[0]) if isinstance(last_price, list) and len(last_price) > 0 else 0.0
+                        volume = float(volume_data[1]) if isinstance(volume_data, list) and len(volume_data) > 1 else 0.0
+                        
+                        if price > 0 and volume > 0:
+                            pair = TradingPair(
+                                symbol=pair_name,
+                                exchange="kraken",
+                                price=price,
+                                volume_24h=volume,
+                                change_24h=None  # Kraken doesn't provide 24h change directly
+                            )
+                            pairs.append(pair)
+                            self.logger.debug(f"Added Kraken pair: {pair_name} (price: {price}, volume: {volume})")
+                            
+                    except (ValueError, KeyError, IndexError) as e:
+                        self.logger.debug(f"Failed to parse Kraken ticker for {pair_name}: {e}")
+                        continue
+                        
+            except Exception as e:
+                self.logger.warning(f"Failed to fetch ticker for Kraken batch {pair_list}: {e}")
+                continue
+        
+        self.logger.info(f"Successfully parsed {len(pairs)} Kraken pairs with price/volume data")
         return pairs
     
     def _apply_filters(self, pairs: List[TradingPair]) -> List[TradingPair]:
