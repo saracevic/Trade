@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trade-scanner
+    restart: unless-stopped
+    environment:
+      - APP_NAME=Trade Scanner
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      # Add your API keys here or use .env file
+      - BINANCE_API_KEY=${BINANCE_API_KEY:-}
+      - BINANCE_API_SECRET=${BINANCE_API_SECRET:-}
+      - COINBASE_API_KEY=${COINBASE_API_KEY:-}
+      - COINBASE_API_SECRET=${COINBASE_API_SECRET:-}
+      - KRAKEN_API_KEY=${KRAKEN_API_KEY:-}
+      - KRAKEN_API_SECRET=${KRAKEN_API_SECRET:-}
+    volumes:
+      - ./out:/app/out
+      - ./logs:/app/logs
+      - ./data:/app/data
+    command: python main.py --exchanges binance coinbase --output /app/out/results.json
+    networks:
+      - scanner-network
+
+networks:
+  scanner-network:
+    driver: bridge
+
+volumes:
+  scanner-data:
+    driver: local

@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-12-26T17:15:29.360298",
+  "results": {
+    "binance": [
+      {
+        "symbol": "BTC/USDT",
+        "exchange": "binance",
+        "price": 45000.0,
+        "volume_24h": 1000000.0,
+        "bid": null,
+        "ask": null,
+        "change_24h": null,
+        "timestamp": "2025-12-26T17:15:29.359962"
+      },
+      {
+        "symbol": "ETH/USDT",
+        "exchange": "binance",
+        "price": 2500.0,
+        "volume_24h": 800000.0,
+        "bid": null,
+        "ask": null,
+        "change_24h": null,
+        "timestamp": "2025-12-26T17:15:29.359978"
+      }
+    ],
+    "coinbase": [
+      {
+        "symbol": "BTC-USD",
+        "exchange": "coinbase",
+        "price": 45100.0,
+        "volume_24h": 950000.0,
+        "bid": null,
+        "ask": null,
+        "change_24h": null,
+        "timestamp": "2025-12-26T17:15:29.360156"
+      },
+      {
+        "symbol": "ETH-USD",
+        "exchange": "coinbase",
+        "price": 2510.0,
+        "volume_24h": 820000.0,
+        "bid": null,
+        "ask": null,
+        "change_24h": null,
+        "timestamp": "2025-12-26T17:15:29.360163"
+      }
+    ]
+  }
+}
