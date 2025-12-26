@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */6 * * *'  # Her 6 saatte bir çalıştır
-  workflow_dispatch:  # Manuel tetikleme
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   scan:
@@ -36,7 +36,9 @@ jobs:
         run: |
           if [ -f "results.json" ]; then
             echo "results.json exists"
-            cat results.json
+            echo "File size: $(wc -c < results.json) bytes"
+            echo "Preview (first 20 lines):"
+            head -20 results.json
           else
             echo "results.json not found!"
             exit 1

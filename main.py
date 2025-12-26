@@ -64,8 +64,6 @@ async def main():
     except Exception as e:
         logger.error(f"Error running scanner: {e}", exc_info=True)
         # Create results.json with error message even on failure
-        from datetime import datetime, timezone
-
         error_results = {
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "timestamp": None,
