@@ -5,44 +5,43 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Trade Scanner Results</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:12px}
-    header{display:flex;flex-direction:column;gap:6px}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-    input[type=search]{padding:8px;border-radius:6px;border:1px solid #ddd;min-width:160px}
-    label{display:inline-flex;align-items:center;gap:6px}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px}
-    th{background:#f6f6f6}
-    @media(min-width:900px){th,td{font-size:13px}}
-    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef;border:1px solid #cce;font-size:12px}
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 16px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    header { margin-bottom: 20px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    input[type=search] { padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-width: 200px; }
+    label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; border: 1px solid #eee; text-align: left; font-size: 14px; }
+    th { background: #f8f8f8; font-weight: 600; }
+    @media (max-width: 768px) { table { font-size: 12px; } th, td { padding: 8px; } .controls { flex-direction: column; } }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb; font-size: 12px; }
+    .exchange-badge { background: #fff3e0; color: #f57c00; }
+    button { padding: 10px 15px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #1565c0; }
   </style>
 </head>
 <body>
-  <header>
-    <h2>Binance Perp Scan</h2>
-    <div class="controls">
-      <input id="q" type="search" placeholder="Sembol ara (ör. BTCUSDT)">
-      <label><input id="f_mid" type="checkbox"> Sadece Asia 50% midline temas</label>
-      <label><input id="f_fib" type="checkbox"> Sadece Fib50 temas</label>
-      <button id="refresh">Yenile</button>
-      <div style="margin-left:auto">
-        <a href="/results.json">results.json</a>
-        <a style="margin-left:10px;padding:8px 10px;background:#2b6ef6;color:#fff;border-radius:6px;text-decoration:none" href="https://github.com/saracevic/Trade/actions/workflows/manual_scan.yml">Run Scan</a>
+  <div class="container">
+    <header>
+      <h2>Trade Scanner Results</h2>
+      <div class="controls">
+        <input id="q" type="search" placeholder="Sembol ara (ör. BTCUSDT)">
+        <label><input id="f_mid" type="checkbox"> Asia 50% midline temas</label>
+        <label><input id="f_fib" type="checkbox"> Fib50 temas</label>
+        <button id="refresh">Yenile</button>
       </div>
-    </div>
-  </header>
-
-  <div id="summary"></div>
-  <div id="tablewrap"></div>
+    </header>
+    <div id="summary"></div>
+    <div id="tablewrap"></div>
+  </div>
 
   <script>
     async function load(){
-      // Try local published results.json first; if unavailable, fall back to raw.githubusercontent (repo main branch)
       try{
         const res = await fetch('./results.json');
         if(res.ok) return await res.json();
-      }catch(e){/* continue to fallback */}
-      // fallback: raw.githubusercontent URL (bypass Pages publishing issues)
+      }catch(e){}
       const raw = `https://raw.githubusercontent.com/saracevic/Trade/main/results.json?t=${Date.now()}`;
       const fres = await fetch(raw);
       if(!fres.ok) throw new Error('Fallback fetch failed: '+fres.status);
@@ -64,12 +63,13 @@
         return true;
       });
 
-      const headers = ['Symbol','Asia Midline Touch','Fib50','ATH','ATL'];
+      const headers = ['Borsa','Symbol','Asia Midline Touch','Fib50','ATH','ATL'];
       let html = '<table><thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
       for(const r of rows){
         const mid = r.midline_touch ? `<span class="badge">${r.midline_touch.price} @ ${r.midline_touch.time}</span>` : '';
         const fib = r.fib_touches && r.fib_touches.length? `<span class="badge">${r.fib_touches.map(ft=>ft.level+' @ '+ft.touch.time).join('<br>')}</span>` : (r.fib50? r.fib50 : '');
-        html += `<tr><td>${r.symbol}</td><td>${mid}</td><td>${fib}</td><td>${r.ath||''}</td><td>${r.atl||''}</td></tr>`;
+        const exchange = r.exchange ? `<span class="badge exchange-badge">${r.exchange}</span>` : '';
+        html += `<tr><td>${exchange}</td><td>${r.symbol}</td><td>${mid}</td><td>${fib}</td><td>${r.ath||''}</td><td>${r.atl||''}</td></tr>`;
       }
       html += '</tbody></table>';
       document.getElementById('tablewrap').innerHTML = html;
