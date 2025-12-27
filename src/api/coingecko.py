@@ -52,7 +52,8 @@ class CoinGeckoAPI:
             vs_currency: Target currency (default: usd)
             per_page: Number of results per page
             page: Page number
-            order: Ordering (market_cap_desc, gecko_desc, gecko_asc, market_cap_asc, market_cap_desc, volume_asc, volume_desc)
+            order: Ordering (market_cap_desc, gecko_desc, gecko_asc,
+                market_cap_asc, volume_asc, volume_desc)
 
         Returns:
             List of market data

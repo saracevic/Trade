@@ -3,12 +3,11 @@ Tests for API Modules
 Tests the API classes and their functionality.
 """
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
 
-from src.api.base import BaseExchangeAPI
 from src.api.binance import BinanceAPI
 from src.api.coinbase import CoinbaseAPI
 from src.api.kraken import KrakenAPI

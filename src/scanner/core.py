@@ -13,7 +13,7 @@ from src.api.binance import BinanceAPI
 from src.api.coinbase import CoinbaseAPI
 from src.api.kraken import KrakenAPI
 from src.models.trade import ScannerConfig, ScanResult, TradingPair
-from src.utils.logger import LoggerMixin, setup_logger
+from src.utils.logger import LoggerMixin
 
 # Rate limiting configuration
 API_RATE_LIMIT_DELAY = 0.15  # Seconds between API calls
@@ -75,8 +75,10 @@ class TradeScanner(LoggerMixin):
 
         for exchange in self.config.enabled_exchanges:
             try:
-                api_key = self.config.api_keys.get(exchange, "")
-                api_secret = self.config.api_secrets.get(exchange, "")
+                # Note: api_key and api_secret not currently used for public endpoints
+                # but kept in config for future authenticated endpoints
+                # api_key = self.config.api_keys.get(exchange, "")
+                # api_secret = self.config.api_secrets.get(exchange, "")
 
                 # For now, we initialize APIs without requiring keys
                 # Most public endpoints don't need authentication
@@ -342,8 +344,9 @@ class TradeScanner(LoggerMixin):
                 # Parse ticker data for each pair
                 for pair_name, ticker_info in ticker_data["result"].items():
                     try:
-                        # Kraken ticker format: {'a': [ask_price, ...], 'b': [bid_price, ...],
-                        #                        'c': [last_price, ...], 'v': [volume_today, volume_24h], ...}
+                        # Kraken ticker format:
+                        # {'a': [ask_price, ...], 'b': [bid_price, ...],
+                        #  'c': [last_price, ...], 'v': [volume_today, volume_24h], ...}
                         last_price = ticker_info.get("c", [0, 0])
                         volume_data = ticker_info.get("v", [0, 0])
 

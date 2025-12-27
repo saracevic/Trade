@@ -46,7 +46,7 @@ async def main():
         with open("results.json", "w") as f:
             json.dump(results, f, indent=2, default=str)
 
-        logger.info(f"Scan complete. Results written to results.json")
+        logger.info("Scan complete. Results written to results.json")
         logger.info(f"Total exchanges scanned: {len(results.get('exchanges', {}))}")
         for exchange, pairs in results.get("exchanges", {}).items():
             logger.info(f"  {exchange}: {len(pairs)} pairs")
