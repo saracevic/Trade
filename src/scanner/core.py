@@ -75,13 +75,8 @@ class TradeScanner(LoggerMixin):
 
         for exchange in self.config.enabled_exchanges:
             try:
-                # Note: api_key and api_secret not currently used for public endpoints
-                # but kept in config for future authenticated endpoints
-                # api_key = self.config.api_keys.get(exchange, "")
-                # api_secret = self.config.api_secrets.get(exchange, "")
-
-                # For now, we initialize APIs without requiring keys
                 # Most public endpoints don't need authentication
+                # API keys/secrets in config reserved for future use
                 if exchange == "binance":
                     self.apis[exchange] = BinanceAPI(timeout=self.config.timeout)
                 elif exchange == "coinbase":
