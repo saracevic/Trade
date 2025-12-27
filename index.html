@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Trade Scanner Pro | Kripto Piyasa Takip</title>
+  <title>Trade Scanner Pro | Cryptocurrency Market Tracking</title>
+  <meta name="description" content="Professional multi-exchange cryptocurrency trading pair scanner with real-time market analysis">
+  <meta name="keywords" content="cryptocurrency, trading, scanner, binance, coinbase, kraken, market analysis">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -434,6 +436,43 @@
       opacity: 0.8;
     }
     
+    .lang-toggle {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .lang-toggle:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.5);
+    }
+    
+    .export-btn {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .export-btn:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.5);
+    }
+    
     @media (max-width: 768px) {
       .header {
         padding: 20px;
@@ -482,18 +521,19 @@
         <div class="logo-icon">📊</div>
         <div class="logo-text">
           <h1>Trade Scanner Pro</h1>
-          <p>Gerçek zamanlı kripto piyasa takip sistemi</p>
+          <p data-i18n="subtitle">Real-time cryptocurrency market tracking system</p>
         </div>
       </div>
       <div class="stats">
         <div class="stat-item">
           <span class="stat-value" id="totalPairs">-</span>
-          <span class="stat-label">Toplam Çift</span>
+          <span class="stat-label" data-i18n="totalPairs">Total Pairs</span>
         </div>
         <div class="stat-item">
           <span class="stat-value" id="exchanges">-</span>
-          <span class="stat-label">Borsa</span>
+          <span class="stat-label" data-i18n="exchanges">Exchanges</span>
         </div>
+        <button class="lang-toggle" id="langToggle">🌐 TR</button>
       </div>
     </div>
 
@@ -505,7 +545,8 @@
             id="searchInput" 
             type="search" 
             class="search-input" 
-            placeholder="Sembol ara (örn. BTCUSDT, ETH-USD)..."
+            data-i18n-placeholder="searchPlaceholder"
+            placeholder="Search symbol (e.g., BTCUSDT, ETH-USD)..."
           >
         </div>
       </div>
@@ -513,37 +554,43 @@
       <div class="filters">
         <div class="filter-group" id="filterMidline">
           <div class="checkbox" id="checkMidline"></div>
-          <span class="filter-label">🎯 Asia 50% Midline Temas</span>
+          <span class="filter-label" data-i18n="filterMidline">🎯 Asia 50% Midline Touch</span>
         </div>
         
         <div class="filter-group" id="filterFib">
           <div class="checkbox" id="checkFib"></div>
-          <span class="filter-label">📈 Fib50 Temas</span>
+          <span class="filter-label" data-i18n="filterFib">📈 Fib50 Touch</span>
         </div>
         
         <button class="btn btn-primary" id="refreshBtn">
           <span>🔄</span>
-          <span>Yenile</span>
+          <span data-i18n="refresh">Refresh</span>
+        </button>
+        
+        <button class="export-btn" id="exportBtn">
+          <span>📥</span>
+          <span data-i18n="export">Export CSV</span>
         </button>
       </div>
     </div>
 
     <div class="table-container">
       <div class="table-header">
-        <h2 class="table-title">Tarama Sonuçları</h2>
-        <span class="result-count" id="resultCount">0 sonuç</span>
+        <h2 class="table-title" data-i18n="scanResults">Scan Results</h2>
+        <span class="result-count" id="resultCount" data-i18n-suffix=" results">0 results</span>
       </div>
       
       <div id="tableContent">
         <div class="loading">
           <div class="spinner"></div>
-          <div class="loading-text">Veriler yükleniyor...</div>
+          <div class="loading-text" data-i18n="loading">Loading data...</div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      Güncelleme Zamanı: <span id="updateTime">-</span>
+      <span data-i18n="updateTime">Update Time</span>: <span id="updateTime">-</span> | 
+      <a href="https://github.com/saracevic/Trade" target="_blank" rel="noopener noreferrer">GitHub</a>
     </div>
   </div>
 
@@ -551,6 +598,123 @@
     let scanData = null;
     let midlineFilter = false;
     let fibFilter = false;
+    let currentLang = 'en';
+
+    // Internationalization
+    const translations = {
+      en: {
+        subtitle: 'Real-time cryptocurrency market tracking system',
+        totalPairs: 'Total Pairs',
+        exchanges: 'Exchanges',
+        searchPlaceholder: 'Search symbol (e.g., BTCUSDT, ETH-USD)...',
+        filterMidline: '🎯 Asia 50% Midline Touch',
+        filterFib: '📈 Fib50 Touch',
+        refresh: 'Refresh',
+        export: 'Export CSV',
+        scanResults: 'Scan Results',
+        results: 'results',
+        loading: 'Loading data...',
+        updateTime: 'Update Time',
+        noResults: 'No results found',
+        noResultsSubtext: 'Try different filters or search criteria',
+        errorLoading: 'Error loading data',
+        exchange: 'Exchange',
+        symbol: 'Symbol',
+        asiaMidline: 'Asia Midline',
+        fib50: 'Fib50',
+        ath: 'ATH',
+        atl: 'ATL'
+      },
+      tr: {
+        subtitle: 'Gerçek zamanlı kripto piyasa takip sistemi',
+        totalPairs: 'Toplam Çift',
+        exchanges: 'Borsa',
+        searchPlaceholder: 'Sembol ara (örn. BTCUSDT, ETH-USD)...',
+        filterMidline: '🎯 Asia 50% Midline Temas',
+        filterFib: '📈 Fib50 Temas',
+        refresh: 'Yenile',
+        export: 'CSV İndir',
+        scanResults: 'Tarama Sonuçları',
+        results: 'sonuç',
+        loading: 'Veriler yükleniyor...',
+        updateTime: 'Güncelleme Zamanı',
+        noResults: 'Sonuç bulunamadı',
+        noResultsSubtext: 'Farklı filtreler veya arama kriterleri deneyebilirsiniz',
+        errorLoading: 'Veri yüklenirken hata oluştu',
+        exchange: 'Borsa',
+        symbol: 'Sembol',
+        asiaMidline: 'Asia Midline',
+        fib50: 'Fib50',
+        ath: 'ATH',
+        atl: 'ATL'
+      }
+    };
+
+    function translate(key) {
+      return translations[currentLang][key] || key;
+    }
+
+    function updateLanguage() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = translate(key);
+      });
+      
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = translate(key);
+      });
+      
+      // Update result count
+      renderTable();
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'tr' : 'en';
+      document.getElementById('langToggle').textContent = currentLang === 'en' ? '🌐 TR' : '🌐 EN';
+      updateLanguage();
+    }
+
+    function exportToCSV() {
+      if (!scanData || !scanData.results) return;
+      
+      const results = scanData.results || [];
+      const searchQuery = document.getElementById('searchInput').value.trim().toUpperCase();
+      
+      // Filter results
+      const filtered = results.filter(r => {
+        if (searchQuery && !r.symbol.includes(searchQuery)) return false;
+        if (midlineFilter && !r.midline_touch) return false;
+        if (fibFilter && (!r.fib_touches || r.fib_touches.length === 0)) return false;
+        return true;
+      });
+      
+      // Create CSV content
+      let csv = 'Exchange,Symbol,Asia Midline Price,Asia Midline Time,Fib50,ATH,ATL\n';
+      
+      filtered.forEach(r => {
+        const exchange = r.exchange || '';
+        const symbol = r.symbol || '';
+        const midlinePrice = r.midline_touch ? r.midline_touch.price : '';
+        const midlineTime = r.midline_touch ? r.midline_touch.time : '';
+        const fib50 = r.fib50 || '';
+        const ath = r.ath || '';
+        const atl = r.atl || '';
+        
+        csv += `${exchange},${symbol},${midlinePrice},${midlineTime},${fib50},${ath},${atl}\n`;
+      });
+      
+      // Download CSV
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `trade-scanner-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
@@ -563,6 +727,8 @@
       document.getElementById('filterMidline').addEventListener('click', toggleMidlineFilter);
       document.getElementById('filterFib').addEventListener('click', toggleFibFilter);
       document.getElementById('refreshBtn').addEventListener('click', loadData);
+      document.getElementById('langToggle').addEventListener('click', toggleLanguage);
+      document.getElementById('exportBtn').addEventListener('click', exportToCSV);
     }
 
     function toggleMidlineFilter() {
@@ -592,10 +758,11 @@
         }
         renderTable();
       } catch (error) {
+        console.error('Error loading data:', error);
         document.getElementById('tableContent').innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">⚠️</div>
-            <div class="empty-text">Veri yüklenirken hata oluştu</div>
+            <div class="empty-text" data-i18n="errorLoading">${translate('errorLoading')}</div>
             <div class="empty-subtext">${error.message}</div>
           </div>
         `;
@@ -620,16 +787,18 @@
       document.getElementById('totalPairs').textContent = results.length;
       const exchanges = [...new Set(results.map(r => r.exchange).filter(Boolean))];
       document.getElementById('exchanges').textContent = exchanges.length;
-      document.getElementById('resultCount').textContent = `${filtered.length} sonuç`;
-      document.getElementById('updateTime').textContent = scanData.generated_at || new Date().toLocaleString('tr-TR');
+      document.getElementById('resultCount').textContent = `${filtered.length} ${translate('results')}`;
+      
+      const updateTime = scanData.generated_at || new Date().toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US');
+      document.getElementById('updateTime').textContent = updateTime;
 
       // Render table
       if (filtered.length === 0) {
         document.getElementById('tableContent').innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">🔍</div>
-            <div class="empty-text">Sonuç bulunamadı</div>
-            <div class="empty-subtext">Farklı filtreler veya arama kriterleri deneyebilirsiniz</div>
+            <div class="empty-text" data-i18n="noResults">${translate('noResults')}</div>
+            <div class="empty-subtext" data-i18n="noResultsSubtext">${translate('noResultsSubtext')}</div>
           </div>
         `;
         return;
@@ -640,12 +809,12 @@
           <table>
             <thead>
               <tr>
-                <th>Borsa</th>
-                <th>Sembol</th>
-                <th>Asia Midline</th>
-                <th>Fib50</th>
-                <th>ATH</th>
-                <th>ATL</th>
+                <th data-i18n="exchange">${translate('exchange')}</th>
+                <th data-i18n="symbol">${translate('symbol')}</th>
+                <th data-i18n="asiaMidline">${translate('asiaMidline')}</th>
+                <th data-i18n="fib50">${translate('fib50')}</th>
+                <th data-i18n="ath">${translate('ath')}</th>
+                <th data-i18n="atl">${translate('atl')}</th>
               </tr>
             </thead>
             <tbody>
